@@ -13,7 +13,7 @@ if ($currentDrive -eq 'C') {
         Write-Host "$currentDrive`:\\ " -ForegroundColor Green -NoNewline
         Write-Host "@ User" -ForegroundColor Gray -NoNewline
         Write-Host " -> " -ForegroundColor Yellow -NoNewline
-        Write-Host "$currentPath" -ForegroundColor Cyan -NoNewline
+        Write-Host "$currentPath" -ForegroundColor Cyan -NoNewline # Username in path (Necessary)
     }
     else {
         $path = "$currentDrive`:\\ ~ root" + $PWD.Path.Insert(2, "\")

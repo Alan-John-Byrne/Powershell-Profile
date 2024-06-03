@@ -19,7 +19,7 @@ function Get-Current-User-Username { return (whoami | ForEach-Object { $_.Split(
 # EDITING APPEARANCE ( MUST USE '. $PROFILE' for refresh ):
 function Prompt {
     # Calling custom script.
-    & "C:\Users\$(get-username)\Documents\PowerShell\Scripts\appearance.ps1"
+    & "C:\Users\$(get-username)\Documents\PowerShell\scripts\appearance.ps1"
     # Remove 'PS>'
     return " "
 }
