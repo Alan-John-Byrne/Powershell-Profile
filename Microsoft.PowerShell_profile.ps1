@@ -133,7 +133,7 @@ function Start-SSHAgent {
     # Check if the key is already added to the agent
     $keys = ssh-add -L
     if ($keys -notmatch "The agent has no identities.") {
-        Write-Output "Powershell Git SSH Key already added."
+        # Do Nothing.
         return
     }
     else {
