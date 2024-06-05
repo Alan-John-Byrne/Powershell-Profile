@@ -9,12 +9,12 @@ function Edit-PowerShell-Profile { code $current_profile }
 # Set-Alias edit Edit-PowerShell-Profile
 function Go-To-PowerShell-Profile { cd "$HOME\Documents\Powershell" }
 # Set-Alias profile Go-To-PowerShell-Profile
-function Share-Profile-With-VSCode-Extension {Get-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\profile.ps1"}
-# Set-Alias vscode-profile Share-Profile-With-VSCode-Extension
 function Show-Profile-Aliases { bot $current_profile 20 }
 # Set-Alias aliases Show-Profile-Aliases
 function Get-PowerShell-Version { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
 # Set-Alias ps-v Get-PowerShell-Version
+function Open-Current-Directory { Invoke-Item . }
+# Set-Alias open Open-Current-Directory
 function Get-Current-User-Username { return (whoami | ForEach-Object { $_.Split('\') })[-1] }
 Set-Alias get-username Get-Current-User-Username
 
@@ -268,7 +268,10 @@ if(($PROFILE | ForEach-Object { $_.Split('\') })[-1] -eq "Microsoft.VSCode_profi
 } else {
     $current_profile = $PROFILE
 }
-# NOTE: 
+function Share-Profile-With-VSCode-Extension {Get-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\profile.ps1"}
+# Set-Alias vscode-profile Share-Profile-With-VSCode-Extension
+# ON START SYNC WITH VSCODE EXTENSION:
+vscode-profile
 #######################################################################################################
 
 
@@ -281,6 +284,7 @@ Set-Alias profile                   Go-To-PowerShell-Profile
 Set-Alias vscode-profile            Share-Profile-With-VSCode-Extension
 Set-Alias aliases                   Show-Profile-Aliases
 Set-Alias ps-v                      Get-PowerShell-Version
+Set-Alias open                      Open-Current-Directory
 #et-Alias get-username              Get-Current-User-Username (Note: '#' Just means command the command was configured earlier.)
 Set-Alias autocomplete              Toggle-AutoComplete
 Set-Alias pskg                      PowerShell-Package-Manager
