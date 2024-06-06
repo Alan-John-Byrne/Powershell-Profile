@@ -271,6 +271,7 @@ if(($PROFILE | ForEach-Object { $_.Split('\') })[-1] -eq "Microsoft.VSCode_profi
 function Share-Profile-With-VSCode-Extension {Get-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\profile.ps1"}
 # Set-Alias vscode-profile Share-Profile-With-VSCode-Extension
 # ON START SYNC WITH VSCODE EXTENSION:
+Set-Alias vscode-profile Share-Profile-With-VSCode-Extension
 vscode-profile
 #######################################################################################################
 
@@ -279,13 +280,14 @@ vscode-profile
 
 
 #                  **ALL ALIASES** 
+# Note: '#' Just means that the command was previously configured.
 Set-Alias edit                      Edit-PowerShell-Profile
 Set-Alias profile                   Go-To-PowerShell-Profile
-Set-Alias vscode-profile            Share-Profile-With-VSCode-Extension
+#et-Alias vscode-profile            Share-Profile-With-VSCode-Extension
 Set-Alias aliases                   Show-Profile-Aliases
 Set-Alias ps-v                      Get-PowerShell-Version
 Set-Alias open                      Open-Current-Directory
-#et-Alias get-username              Get-Current-User-Username (Note: '#' Just means command the command was configured earlier.)
+#et-Alias get-username              Get-Current-User-Username 
 Set-Alias autocomplete              Toggle-AutoComplete
 Set-Alias pskg                      PowerShell-Package-Manager
 Set-Alias choco-install             Install-Chocolatey
