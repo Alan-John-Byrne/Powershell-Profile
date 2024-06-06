@@ -9,8 +9,6 @@ function Edit-PowerShell-Profile { code $current_profile }
 # Set-Alias edit Edit-PowerShell-Profile
 function Go-To-PowerShell-Profile { cd "$HOME\Documents\Powershell" }
 # Set-Alias profile Go-To-PowerShell-Profile
-function Show-Profile-Aliases { bot $current_profile 20 }
-# Set-Alias aliases Show-Profile-Aliases
 function Get-PowerShell-Version { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
 # Set-Alias ps-v Get-PowerShell-Version
 function Open-Current-Directory { Invoke-Item . }
@@ -256,19 +254,16 @@ function Show-PowerShell-Script-Names {
 }
 # Set-Alias scripts-out Show-PowerShell-Script-Names
 
-# DEBUGGING FUNCTION: (USED FOR DEBUGGING)
-function check {
-
-}
 
 #######################################################################################################
 # CHECKING THE CURRENT HOST PROFILE (VSCODE EXTENSION SUPPORT):
-if(($PROFILE | ForEach-Object { $_.Split('\') })[-1] -eq "Microsoft.VSCode_profile.ps1"){
+if (($PROFILE | ForEach-Object { $_.Split('\') })[-1] -eq "Microsoft.VSCode_profile.ps1") {
     $current_profile = "C:\Users\$(get-username)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1"
-} else {
+}
+else {
     $current_profile = $PROFILE
 }
-function Share-Profile-With-VSCode-Extension {Get-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\profile.ps1"}
+function Share-Profile-With-VSCode-Extension { Get-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\profile.ps1" }
 # Set-Alias vscode-profile Share-Profile-With-VSCode-Extension
 # ON START SYNC WITH VSCODE EXTENSION:
 Set-Alias vscode-profile Share-Profile-With-VSCode-Extension
@@ -276,8 +271,19 @@ vscode-profile
 #######################################################################################################
 
 
-
-
+function Show-Profile-Aliases { 
+    # Read in the contents of the entire file.
+    $profileContent = Get-Content -Path $current_profile
+    # Get the length of the file.
+    $lengthOfFile = $profileContent.Length - 1
+    # Find all occurrences of a particular string and get their line numbers
+    $matchingLines = $profileContent | Select-String -Pattern "ALL ALIASES"
+    # Get the line number of the second occurrence. (Our Aliases) 
+    $startLineIndex = $matchingLines[1].LineNumber - 1
+    # Output the range of selected lines. (The bottom of the file containing all the aliases.)
+    $profileContent[$startLineIndex..$lengthOfFile]
+}
+#Set-Alias aliases Show-Profile-Aliases
 
 #                  **ALL ALIASES** 
 # Note: '#' Just means that the command was previously configured.
