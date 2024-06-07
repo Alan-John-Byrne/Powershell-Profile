@@ -1,307 +1,123 @@
 # Aliases for editing and refreshing the PowerShell Profile:
 
-# RELOAD FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
-# function reload { . $PROFILE }
-
-# COMMON COMMANDS:
-Set-Alias sudo gsudo # Elevating permissions using gsudo (sudo) [Requires 'gsudo' package]
-function Edit-PowerShell-Profile { code $current_profile }
-# Set-Alias edit Edit-PowerShell-Profile
-function Go-To-PowerShell-Profile { cd "$HOME\Documents\Powershell" }
-# Set-Alias profile Go-To-PowerShell-Profile
-function Get-PowerShell-Version { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
-# Set-Alias ps-v Get-PowerShell-Version
-function Open-Current-Directory { Invoke-Item . }
-# Set-Alias open Open-Current-Directory
-function Get-Current-User-Username { return (whoami | ForEach-Object { $_.Split('\') })[-1] }
-Set-Alias get-username Get-Current-User-Username
+# function reload { . $PROFILE }, FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
 
 # EDITING APPEARANCE ( MUST USE '. $PROFILE' for refresh ):
 function Prompt {
     # Calling custom script.
-    & "C:\Users\$(get-username)\Documents\PowerShell\scripts\appearance.ps1"
+    & "$HOME\Documents\PowerShell\scripts\appearance.ps1"
     # Remove 'PS>'
     return " "
 }
 
-# AUTO-COMPLETE TOGGLE (OFF BY DEFAULT):
+# TURNING AUTO-COMPLETE OFF BY DEFAULT:
 Set-PSReadLineOption -PredictionSource None
-function Toggle-AutoComplete {
-    $currentOption = (Get-PSReadLineOption).PredictionSource
-    if ($currentOption -eq 'None') {
-        Set-PSReadLineOption -PredictionSource History
-        Write-Host "Auto-complete enabled."
-    }
-    else {
-        Set-PSReadLineOption -PredictionSource None
-        Write-Host "Auto-complete disabled."
-    }
-}
-# Set-Alias autocomplete Toggle-AutoComplete
 
-# PACKAGE MANAGEMENT:
-function PowerShell-Package-Manager {
-    param (
-        [string]$command,
-        [string]$packageName
-    )
-    
-    switch ($command) {
-        "list" { Get-Module -ListAvailable | Select-Object Name, Version | Format-Table -AutoSize }
-        "installed" { 
-            $installedModules = Get-Module -ListAvailable | Select-Object Name, Version
-            $installedChocoPackages = gsudo choco list --no-color | Select-String "([^ ]+)\s+(\d+\.\d+\.\d+[^\s]*)" | ForEach-Object {
-                $match = $_.Matches[0].Groups
-                [PSCustomObject]@{ Name = $match[1].Value; Version = $match[2].Value }
-            }
-
-            Write-Host "Installed PowerShell Modules:"
-            $installedModules | Format-Table -AutoSize
-            Write-Host -ForegroundColor Green -NoNewline "Total PowerShell Modules: "
-            Write-Host ($installedModules.Count)
-
-            Write-Host "`nInstalled Chocolatey Packages:"
-            $installedChocoPackages | Format-Table -AutoSize
-            Write-Host -ForegroundColor Green -NoNewline "Total Chocolatey Packages: "
-            Write-Host ($installedChocoPackages.Count)
-        }
-        "sources" { Get-PackageSource }
-        "install" { 
-            if ($packageName -match "choco:") {
-                $package = $packageName -replace "choco:", ""
-                sudo choco install $package -y
-            }
-            else {
-                Install-Module -Name $packageName -Scope CurrentUser # Install only for the current user.
-            } 
-        } 
-        "update" { 
-            if ($packageName -match "choco:") {
-                $package = $packageName -replace "choco:", ""
-                choco upgrade $package -y
-            }
-            else {
-                Update-Module -Name $packageName 
-            }
-        }
-        "uninstall" { 
-            if ($packageName -match "choco:") {
-                $package = $packageName -replace "choco:", ""
-                choco uninstall $package -y
-            }
-            else {
-                Uninstall-Module -Name $packageName 
-            }
-        }
-        "find" { 
-            if ($packageName -match "choco:") {
-                $package = $packageName -replace "choco:", ""
-                choco search $package
-            }
-            else {
-                Find-Module -Name $packageName 
-            }
-        }
-        default { Write-Host "Unknown action: $command. Use one of the following: `nlist, install, update, uninstall, find, installed, sources." }
-    }
-}
-# Set-Alias pskg PowerShell-Package-Manager
-
-function Install-Chocolatey {
-    if (Get-Command choco -ErrorAction SilentlyContinue) {
-        Write-Host "Chocolatey is already installed."
-    }
-    else {
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-    }
-}
-# Set-Alias choco-install Install-Chocolatey
-
-# SSH AGENT (STARTS AUTOMATICALLY AT SESSION START):
-function Start-SSHAgent {
-    $service = Get-Service -Name ssh-agent -ErrorAction SilentlyContinue
-    if ($null -eq $service) {
-        Write-Output "SSH agent service not found. Make sure OpenSSH is installed."
-        return
-    }
-    if ($service.Status -ne 'Running') {
-        Start-Service ssh-agent
-        Write-Output "Started SSH agent service."
-    }
-    # Check if the key is already added to the agent
-    $keys = ssh-add -L
-    if ($keys -notmatch "The agent has no identities.") {
-        # Do Nothing.
-        return
-    }
-    else {
-        ssh-add "$HOME\.ssh\alan_powershell_ssh_key"
-        Write-Output "SSH key added to the agent."
-    }
-}
-Start-SSHAgent # STARTING SSH AGENT
+# SIMPLE FUNCTION ALIAS COMMANDS:
+function Edit-PowerShell-Profile { code $(get-prof) }
+# Alias: edit
+function Go-To-PowerShell-Profile { Set-Location "$HOME\Documents\Powershell" }
+# Alias: profile
+function Get-PowerShell-Version { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
+# Alias: ps-v
+function Open-Current-Directory { Invoke-Item . }
+# Alias: open
 function SSH-Location { Set-Location "$HOME\.ssh" }
-# Set-Alias sshome SSH-Location
+# Alias: sshome
+function Tail([string]$FileName, [int]$Lines = 10) { Get-Content -Path $FileName | Select-Object -Last $Lines }
+# Alias: bot -filename -numberlines
+function Head([string]$FileName, [int]$Lines = 10) { Get-Content -Path $FileName | Select-Object -First $Lines }
+# Alias: top -filename -numberlines
+function Get-Current-User-Username { return (whoami | ForEach-Object { $_.Split('\') })[-1] }
+# Alias: get-username
+function Check-GitHub-SSH-Connection { ssh -T git@github.com }
+# Alias: test-git
+function Go-To-Godot-Games { Set-Location "$HOME\Desktop\Games\Godot Games" }
+# Alias: godot-games
+function Go-To-PowerShell-Scripts { Set-Location "$HOME\Documents\PowerShell\scripts" }
+# Alias: scripts
 
-function Check-GitHub-SSH-Connection {
-    ssh -T git@github.com
+# SCRIPT BASED FUNCTION ALIAS COMMANDS:
+
+$ScriptsDir = "$HOME\Documents\Powershell\scripts" # Scripts Directory
+
+function Toggle-AutoComplete {
+    $ScriptPath = "$ScriptsDir\toggle-autocomplete.ps1"
+    & $ScriptPath
 }
-# Set-Alias test-git Check-GitHub-SSH-Connection
-
-
-# GIT-CONFIG (Local & Global):
-function Set-GitLocalCredentials {
-    param (
-        [string]$localUsername,
-        [string]$localEmail
-    )
-
-    # Check if the current directory is a Git repository
-    if (-not (Test-Path .git)) {
-        Write-Host "The current path is not a Git repository."
-        return
-    }
-    # If the user has not entered credentials, prompt them too.
-    if (-not $localUsername) {
-        $localUsername = Read-Host "Enter your local Git username: "
-    }
-    if (-not $localEmail) {
-        $localEmail = Read-Host "Enter your local Git email: "
-    }
-    # Officially set those credentials for this repository.
-    git config --local user.name "$localUsername"
-    git config --local user.email "$localEmail"
-    Write-Host "Local Git credentials set for current repository: $localUsername <$localEmail>"
-}
-# Set-Alias set-local-cred Set-GitLocalCredentials
-
-function Get-GitLocalCredentials {
-    # Check if the current directory is a Git repository
-    if (-not (Test-Path .git)) {
-        Write-Host "The current path is not a Git repository."
-        return
-    }
-
-    # Retrieve the local Git username and email
-    $localUsername = git config --local user.name
-    $localEmail = git config --local user.email
-
-    if ($localUsername -eq $null -and $localEmail -eq $null) {
-        Write-Host "No local Git credentials are set for this repository."
-    }
-    else {
-        Write-Host "Local Git credentials for this repository:"
-        Write-Host "Username: $localUsername"
-        Write-Host "Email: $localEmail"
-    }
-}
-# Set-Alias cred Get-GitLocalCredentials
-
-# Various Linux Commands for PowerShell:
-function Create-File ([string]$path) {
-    # Make sure that there is a name given for the new file. (could use '-not' here instead)
-    if ([string]::IsNullOrEmpty($path)) {
-        Write-Host "Please provide a name for the file you are making."
-        return
-    }
-    if (Test-Path $path) {
-        # Update the timestamp if the file exists
-        (Get-Item $path).LastWriteTime = Get-Date
-    }
-    else {
-        # Create an empty file if it does not exist
-        New-Item $path -ItemType File
-    }
-}
-# Set-Alias touch Create-File
-
-function Head {
-    param (
-        [string]$FileName,
-        [int]$Lines = 10
-    )
-    Get-Content -Path $FileName | Select-Object -First $Lines
-}
-# Set-Alias head Head
-
-function Tail {
-    param (
-        [string]$FileName,
-        [int]$Lines = 10
-    )
-    Get-Content -Path $FileName | Select-Object -Last $Lines
-}
-# Set-Alias tail Tail
-
-# Shortcut Commands:
-function Go-To-Godot-Games { cd "C:\Users\$(get-username)\Desktop\Games\Godot Games" }
-# Set-Alias godot-games Go-To-Godot-Games
-
-function Go-To-PowerShell-Scripts {
-    if (Test-Path "C:\Users\$(get-username)\Documents\PowerShell\Scripts") {
-        cd "C:\Users\$(get-username)\Documents\PowerShell\Scripts"
-    }
-    else {
-        Write-Host "Scripts Directory incorrect, ensure it exists."
-    }
-}
-# Set-Alias scripts Go-To-PowerShell-Scripts
-
-function Show-PowerShell-Script-Names {
-    $scriptsPath = "C:\Users\$(get-username)\Documents\PowerShell\Scripts"
-    $files = Get-ChildItem -Path $scriptsPath -File
-    foreach ($file in $files) { Write-Host "-> $($file.FullName)" }
-}
-# Set-Alias scripts-out Show-PowerShell-Script-Names
-
-
-#######################################################################################################
-# CHECKING THE CURRENT HOST PROFILE (VSCODE EXTENSION SUPPORT):
-if (($PROFILE | ForEach-Object { $_.Split('\') })[-1] -eq "Microsoft.VSCode_profile.ps1") {
-    $current_profile = "C:\Users\$(get-username)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1"
-}
-else {
-    $current_profile = $PROFILE
-}
-function Share-Profile-With-VSCode-Extension { Get-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "C:\Users\$(get-username)\Documents\PowerShell\profile.ps1" }
-# Set-Alias vscode-profile Share-Profile-With-VSCode-Extension
-# ON START SYNC WITH VSCODE EXTENSION:
-Set-Alias vscode-profile Share-Profile-With-VSCode-Extension
-vscode-profile
-#######################################################################################################
-
+# Alias: autocomplete
 
 function Show-Profile-Aliases { 
-    # Read in the contents of the entire file.
-    $profileContent = Get-Content -Path $current_profile
-    # Get the length of the file.
-    $lengthOfFile = $profileContent.Length - 1
-    # Find all occurrences of a particular string and get their line numbers
-    $matchingLines = $profileContent | Select-String -Pattern "ALL ALIASES"
-    # Get the line number of the second occurrence. (Our Aliases) 
-    $startLineIndex = $matchingLines[1].LineNumber - 1
-    # Output the range of selected lines. (The bottom of the file containing all the aliases.)
-    $profileContent[$startLineIndex..$lengthOfFile]
+    $ScriptPath = "$ScriptsDir\list-aliases.ps1"
+    & $ScriptPath
 }
-#Set-Alias aliases Show-Profile-Aliases
+# Alias: aliases
+
+function Get-Profile {
+    $ScriptPath = "$ScriptsDir\get-profile.ps1"
+    & $ScriptPath
+}
+# Alias: get-prof
+
+function PowerShell-Package-Manager([string]$command, [string]$packageName) {
+    $ScriptPath = "$ScriptsDir\package-manager.ps1"
+    & $ScriptPath -command $command -packageName $packageName
+}
+# Alias: pskg -command -packageName
+
+# GIT-CONFIG (Local & Global):
+function Set-GitLocalCredentials([string]$localUsername, [string]$localEmail) {
+    $ScriptPath = "$ScriptsDir\git-set-cred.ps1"
+    & $ScriptPath -localUsername $localUsername -localEmail $localEmail
+}
+# Alias: set-local-cred -localUsername -localEmail
+
+function Get-GitLocalCredentials {
+    $ScriptPath = "$ScriptsDir\git-get-cred.ps1"
+    & $ScriptPath
+}
+# Alias: cred 
+
+# Various Linux Commands for PowerShell:
+function Create-File ([string]$path_filename) {
+    $ScriptPath = "$ScriptsDir\touch-create-file.ps1"
+    & $ScriptPath -path_filename $path_filename
+}
+# Alias: touch -path
+
+function Show-PowerShell-Script-Names {
+    $ScriptPath = "$ScriptsDir\list-scripts.ps1"
+    & $ScriptPath -scriptsPath $ScriptsDir
+}
+# Alias: scripts-out
+
+# AUTO SCRIPTS:
+function Start-SSHAgent {
+    $ScriptPath = "$ScriptsDir\start-ssh-agent.ps1"
+    & $ScriptPath
+}
+Start-SSHAgent
+
+function Share-Profile-With-VSCode-Extension { Get-Content -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "$HOME\Documents\PowerShell\profile.ps1" }
+Share-Profile-With-VSCode-Extension
 
 #                  **ALL ALIASES** 
-# Note: '#' Just means that the command was previously configured.
+# Note: Elevating permissions using gsudo (sudo) [Requires 'gsudo' package]
+Set-Alias sudo                      gsudo 
 Set-Alias edit                      Edit-PowerShell-Profile
 Set-Alias profile                   Go-To-PowerShell-Profile
-#et-Alias vscode-profile            Share-Profile-With-VSCode-Extension
 Set-Alias aliases                   Show-Profile-Aliases
+Set-Alias get-prof                  Get-Profile
 Set-Alias ps-v                      Get-PowerShell-Version
 Set-Alias open                      Open-Current-Directory
-#et-Alias get-username              Get-Current-User-Username 
+Set-Alias get-username              Get-Current-User-Username  
 Set-Alias autocomplete              Toggle-AutoComplete
 Set-Alias pskg                      PowerShell-Package-Manager
-Set-Alias choco-install             Install-Chocolatey
 Set-Alias sshome                    SSH-Location
 Set-Alias test-git                  Check-GitHub-SSH-Connection
 Set-Alias touch                     Create-File
 Set-Alias godot-games               Go-To-Godot-Games
-Set-Alias scripts                   Go-To-PowerShell-Scripts
+Set-Alias scripts                   Go-To-PowerShell-Scripts 
 Set-Alias scripts-out               Show-PowerShell-Script-Names
 Set-Alias set-local-cred            Set-GitLocalCredentials
 Set-Alias cred                      Get-GitLocalCredentials
