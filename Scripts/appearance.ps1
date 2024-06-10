@@ -34,3 +34,5 @@ else {
 }
 # Nice little design:
 Write-Host " >>" -ForegroundColor Blue -NoNewline
+# Remove 'PS>'
+return " "
