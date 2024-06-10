@@ -1,5 +1,6 @@
-# function reload { . $PROFILE }, FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
+# Note: function reload { . $PROFILE }, FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
 # Note: Elevating permissions using gsudo (sudo) [Requires 'gsudo' package]
+
 # TURNING AUTO-COMPLETE OFF BY DEFAULT:
 Set-PSReadLineOption -PredictionSource None
 # Scripts Directory
