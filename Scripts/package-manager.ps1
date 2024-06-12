@@ -1,7 +1,7 @@
 param (
-		[string]$command,
-		[string]$packageName
-      )
+	[string]$command,
+	[string]$packageName
+)
 
 switch ($command) {
 	"choco-install" {
@@ -15,26 +15,26 @@ switch ($command) {
 	"list" { Get-Module -ListAvailable | Select-Object Name, Version | Format-Table -AutoSize }
 	"installed" { 
 		$installedModules = Get-Module -ListAvailable | Select-Object Name, Version
-			$installedChocoPackages = gsudo choco list --no-color | Select-String "([^ ]+)\s+(\d+\.\d+\.\d+[^\s]*)" | ForEach-Object {
-				$match = $_.Matches[0].Groups
-					[PSCustomObject]@{ Name = $match[1].Value; Version = $match[2].Value }
-			}
+		$installedChocoPackages = gsudo choco list --no-color | Select-String "([^ ]+)\s+(\d+\.\d+\.\d+[^\s]*)" | ForEach-Object {
+			$match = $_.Matches[0].Groups
+			[PSCustomObject]@{ Name = $match[1].Value; Version = $match[2].Value }
+		}
 
 		Write-Host "Installed PowerShell Modules:"
-			$installedModules | Format-Table -AutoSize
-			Write-Host -ForegroundColor Green -NoNewline "Total PowerShell Modules: "
-			Write-Host ($installedModules.Count)
+		$installedModules | Format-Table -AutoSize
+		Write-Host -ForegroundColor Green -NoNewline "Total PowerShell Modules: "
+		Write-Host ($installedModules.Count)
 
-			Write-Host "`nInstalled Chocolatey Packages:"
-			$installedChocoPackages | Format-Table -AutoSize
-			Write-Host -ForegroundColor Green -NoNewline "Total Chocolatey Packages: "
-			Write-Host ($installedChocoPackages.Count)
+		Write-Host "`nInstalled Chocolatey Packages:"
+		$installedChocoPackages | Format-Table -AutoSize
+		Write-Host -ForegroundColor Green -NoNewline "Total Chocolatey Packages: "
+		Write-Host ($installedChocoPackages.Count)
 	}
 	"sources" { Get-PackageSource }
 	"install" { 
 		if ($packageName -match "choco:") {
 			$package = $packageName -replace "choco:", ""
-				sudo choco install $package -y
+			sudo choco install $package -y
 		}
 		else {
 			Install-Module -Name $packageName -Scope CurrentUser # Install only for the current user.
@@ -43,7 +43,7 @@ switch ($command) {
 	"update" { 
 		if ($packageName -match "choco:") {
 			$package = $packageName -replace "choco:", ""
-				choco upgrade $package -y
+			choco upgrade $package -y
 		}
 		else {
 			Update-Module -Name $packageName 
@@ -52,7 +52,7 @@ switch ($command) {
 	"uninstall" { 
 		if ($packageName -match "choco:") {
 			$package = $packageName -replace "choco:", ""
-				choco uninstall $package -y
+			choco uninstall $package -y
 		}
 		else {
 			Uninstall-Module -Name $packageName 
@@ -61,11 +61,11 @@ switch ($command) {
 	"find" { 
 		if ($packageName -match "choco:") {
 			$package = $packageName -replace "choco:", ""
-				choco search $package
+			choco search $package
 		}
 		else {
 			Find-Module -Name $packageName 
 		}
 	}
-	default { Write-Host "Unknown action: $command. Use one of the following: `nlist, install, update, uninstall, find, installed, sources." }
+	default { Write-Host "Unknown action: $command`n`nUse one of the following:`n`n-list`n-install`n-update`n-uninstall`n-find`n-installed`n-sources.`n`nNote: Remember to prepend 'choco:' to the front of your package name `nin order to use chocolately related functions. eg: pskg install choco:*package-name*" }
 }
