@@ -29,6 +29,10 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
     "cred" = "Get-GitLocalCredentials"
     "touch" = "Create-File"
     "scripts-out" = "Show-PowerShell-Script-Names"
+    "env-add-path" = "Add-Path-To-Env-Variables"
+    "generate-cert-pfx" = "Create-Certificate"
+    "sign-executable" = "Sign-Exectuable-With-Certificate"
+
 }
 # Specifying and setting the corresponding aliases to the global functions set.
 foreach ($alias in $AliasDefinitions.GetEnumerator()) {
@@ -57,6 +61,9 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
     "Get-GitLocalCredentials" =             { & "$ScriptsDir\git-get-cred.ps1" }
     "Create-File" =                         { param($path_filename); & "$ScriptsDir\touch-create-file.ps1" -path_filename $path_filename }
     "Show-PowerShell-Script-Names" =        { & "$ScriptsDir\list-scripts.ps1" -scriptsPath $ScriptsDir }
+    "Add-Path-To-Env-Variables" =           { param($NewPath);& "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath}
+    "Create-Certificate" =                  { param($SubjectName, $PfxFilePath); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -PfxFilePath $PfxFilePath }
+    "Sign-Exectuable-With-Certificate" =    { param($PfxFilePath, $ExecutablePath); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -ExecutablePath $ExecutablePath}
     # Auto Scripts (No Alias Required):
     # Called Automatically:
     "Prompt" =                              { & "$ScriptsDir\appearance.ps1" } # Changing Appearance.
