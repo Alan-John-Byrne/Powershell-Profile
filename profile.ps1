@@ -62,7 +62,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
     "Create-File" =                         { param($path_filename); & "$ScriptsDir\touch-create-file.ps1" -path_filename $path_filename }
     "Show-PowerShell-Script-Names" =        { & "$ScriptsDir\list-scripts.ps1" -scriptsPath $ScriptsDir }
     "Add-Path-To-Env-Variables" =           { param($NewPath);& "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath}
-    "Create-Certificate" =                  { param($SubjectName, $PfxFilePath); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -PfxFilePath $PfxFilePath }
+    "Create-Certificate" =                  { param($SubjectName, $Pass, $PfxFilePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -Password $Password -PfxFilePath $PfxFilePath }
     "Sign-Exectuable-With-Certificate" =    { param($PfxFilePath, $ExecutablePath); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -ExecutablePath $ExecutablePath}
     # Auto Scripts (No Alias Required):
     # Called Automatically:

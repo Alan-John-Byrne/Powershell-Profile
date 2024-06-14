@@ -1,37 +1,41 @@
 param (
-		[Parameter(Mandatory=$true)]
-		[string]$SubjectName,
+	[string]$SubjectName,
+	[System.Security.SecureString]$Password,
+	[string]$PfxFilePath
+)
 
-		[Parameter(Mandatory=$true)]
-		[string]$PfxFilePath
-      )
+# Prepare the commands to run in elevated mode using a seperate process.
+$ScriptBlock = {
+	# User must enter a password.
+	if ($Password.Length -eq 0) {
+		Write-Host "You must enter a password for the certificate."
+		exit
+	} 
+	# Note: Above is how to check if a secure string is empty.
 
-# Generate a Self-Signed Certificate
-$cert = New-SelfSignedCertificate -Type CodeSigning -Subject "CN=$SubjectName" -CertStoreLocation "Cert:\CurrentUser\My"
-Write-Host "Self-signed certificate created with Thumbprint: $($cert.Thumbprint)"
+	# Generate a Self-Signed Certificate
+	$cert = New-SelfSignedCertificate -Type CodeSigning -Subject "CN=$SubjectName" -CertStoreLocation "Cert:\CurrentUser\My"
+	Write-Host "Self-signed certificate created with Thumbprint: $($cert.Thumbprint)"
 
-# Prepare the command to run in elevated mode
-$command = @"
+	# Note: Commands requiring a password parameter, must be read in via the prompt as a secure string.
+	Export-PfxCertificate -Cert "$($cert.PSPath)" -FilePath "$PfxFilePath" -Password $Password 
+	Write-Host "`nCertificate exported to: $PfxFilePath `n"
 
-Export-PfxCertificate -Cert `"$($cert.PSPath)`" -FilePath `"$PfxFilePath`" -Password (Read-Host 'Enter your password' -AsSecureString) 
-Write-Host "Certificate exported to $PfxFilePath"
+	# Define the path and filename for the output text file
+	$outputFileName = "CertificateDetails.txt"
+	$outputFilePath = Join-Path (Split-Path -Path $PfxFilePath) $outputFileName
 
-Read-Host 'Press Enter to continue...'
-exit
+	# Writing non-sensitive details to a text file in the directory of the PFX file
+	$outputContent = "Subject Name: $SubjectName`nPFX File Path: $PfxFilePath"
+	$outputContent | Out-File -FilePath $outputFilePath 
+	Write-Host "Non-sensitive details written to: $outputFilePath `n"
 
-"@
+	Read-Host 'Press Enter to continue...'
+	exit
+}
 
 # Use Start-Process to call this command in an elevated PowerShell process
-Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command $command" -Verb RunAs -Wait
-
-# Define the path and filename for the output text file
-$outputFileName = "CertificateDetails.txt"
-$outputFilePath = Join-Path (Split-Path -Path $PfxFilePath) $outputFileName
-
-# Writing non-sensitive details to a text file in the directory of the PFX file
-$outputContent = "Subject Name: $SubjectName`nPFX File Path: $PfxFilePath"
-$outputContent | Out-File -FilePath $outputFilePath 
-Write-Host "Non-sensitive details written to $outputFilePath"
+Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command & { $(& $scriptBlock) }" -Verb RunAs -Wait
 
 # Note: The PFX file (also known as a PKCS, for 'Personal Key Cryptography Standards'
 # file) is used for storeing private keys, and certificates, and optionally a 
