@@ -10,6 +10,8 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
     # Regular Function Aliases:
     "edit" = "Edit-PowerShell-Profile"
     "nvim-config" = "Edit-Nvim-Config"
+    "nvim-path" = "Go-To-Nvim-Repo-Path"
+    "nvim-plugins" = "Go-To-Nvim-Plugins-Path"
     "profile" = "Go-To-PowerShell-Profile"
     "ps-v" = "Get-PowerShell-Version"
     "open" = "Open-Current-Directory"
@@ -23,6 +25,7 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
     "desktop" = "Go-To-Desktop"
     "prof-dir" = "Get-Powershell-Profile-Location"
     "env-vars" = "Get-Environment-Variables"
+    "appdata" = "Go-To-Appdata"
     # Script Based Function Aliases:
     "autocomplete" = "Toggle-AutoComplete"
     "aliases" = "Show-Profile-Aliases"
@@ -44,7 +47,7 @@ foreach ($alias in $AliasDefinitions.GetEnumerator()) {
 $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
     # Regular Function Aliases:
     "Show-Profile-Aliases" =                { Write-Host "`nPowershell Profile Aliases:`n$($AliasDefinitions.GetEnumerator() | Format-Table -Property Name, Value -AutoSize | Out-String)" }
-    "Edit-PowerShell-Profile" =             { code $(get-prof) }
+    "Edit-PowerShell-Profile" =             { nvim $(get-prof) }
     "Go-To-PowerShell-Profile" =            { Set-Location "$HOME\Documents\Powershell" }
     "Get-Powershell-Profile-Location" =     { return "$HOME\Documents\Powershell" }
     "Get-PowerShell-Version" =              { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
@@ -56,9 +59,12 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
     "Check-GitHub-SSH-Connection" =         { ssh -T git@github.com }
     "Go-To-Godot-Games" =                   { Set-Location "$HOME\Desktop\Games\Godot Games" }
     "Go-To-PowerShell-Scripts" =            { Set-Location "$HOME\Documents\PowerShell\scripts" }
-    "Go-To-Desktop" =                       { Set-Location "$HOME\Desktop\"}
-    "Edit-Nvim-Config" =                    { Set-Location "$HOME\AppData\Local\nvim" ; nvim 'init.lua' ; profile}
+    "Go-To-Desktop" =                       { Set-Location "$HOME\Desktop\" }
+    "Edit-Nvim-Config" =                    { Set-Location "$HOME\AppData\Local\nvim" ; nvim 'init.lua' ; profile }
+    "Go-To-Nvim-Repo-Path" =                { Set-Location "$HOME\AppData\Local\nvim" } 
+    "Go-To-Nvim-Plugins-Path" =             { Set-Location "$HOME\AppData\Local\nvim\lua\custom\plugins" }
     "Get-Environment-Variables" =           { Get-ChildItem env:* | sort-object name}
+    "Go-To-Appdata" =                       { Set-Location "$HOME\AppData\"}
     # Script Based Function Aliases:
     "Toggle-AutoComplete" =                 { & "$ScriptsDir\toggle-autocomplete.ps1" }
     "Get-Profile" =                         { & "$ScriptsDir\get-profile.ps1" }
