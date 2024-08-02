@@ -37,21 +37,21 @@ param (
 					sudo choco install $package -y
 			}
 			else {
-				Install-Module -Name $packageName -Scope CurrentUser # Install only for the current user.
-			} 
+				Install-Module -Name $packageName -Scope CurrentUser # Install only for the current user. (So within that users folder on the C: drive)
+			}
 		} 
 		"update" { 
 			if($packageName){
 				if ($packageName -match "choco:") {
 					$package = $packageName -replace "choco:", ""
-						choco upgrade $package -y
+						sudo choco upgrade $package -y
 				}
 				else {
 					Update-Module -Name $packageName 
 				}
 			}else {
 				# If we need to update powershell itself using winget, don't provide parameters.
-				winget upgrade --id Microsoft.Powershell
+				winget install --id Microsoft.Powershell --source winget
 				# Following upgrading / updating powershell, update all winget packages (Okay for home use, not your work / office).
 				winget upgrade --all -h --accept-package-agreements --accept-source-agreements --include-unknown
 				# Finally updating all chocolately packages.
@@ -61,7 +61,7 @@ param (
 		"uninstall" { 
 			if ($packageName -match "choco:") {
 				$package = $packageName -replace "choco:", ""
-					choco uninstall $package -y
+					sudo choco uninstall $package -y
 			}
 			else {
 				Uninstall-Module -Name $packageName 
