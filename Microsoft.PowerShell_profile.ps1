@@ -1,11 +1,11 @@
 # Note: function reload { . $PROFILE }, FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
 # Note: Elevating permissions using gsudo (sudo) [Requires 'gsudo' package]
-# TURNING AUTO-COMPLETE OFF BY DEFAULT:
 
 # IMPORTANT: Below is how to configure oh-my-posh theme (MUST HAVE INSTALLED oh-my-posh VIA CHOCOLATEY)
 # NOTE: Initialsing prompt theme using 'oh-my-posh'. (Disable / Enable - But comment out Prompt Alias prior to doing so)
 # oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\gruvbox.omp.json" | Invoke-Expression
 
+# TURNING AUTO-COMPLETE OFF BY DEFAULT:
 Set-PSReadLineOption -PredictionSource None
 # Scripts Directory
 $ScriptsDir = "$HOME\Documents\Powershell\scripts"
@@ -15,6 +15,7 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
 # Regular Function Aliases:
     "edit" = "Edit-PowerShell-Profile"
     "nvim-config" = "Edit-Nvim-Config"
+    "nvim-config-lazy" = "Edit-LazyVim-Base-Config"
     "nvim-path" = "Go-To-Nvim-Repo-Path"
     "nvim-plugins" = "Go-To-Nvim-Plugins-Path"
     "profile" = "Go-To-PowerShell-Profile"
@@ -66,6 +67,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Edit-Nvim-Config" =                    { Set-Location "$HOME\AppData\Local\nvim" ; nvim 'init.lua' ; profile }
   "Go-To-Nvim-Repo-Path" =                { Set-Location "$HOME\AppData\Local\nvim" } 
   "Go-To-Nvim-Plugins-Path" =             { Set-Location "$HOME\AppData\Local\nvim\lua\custom\plugins" }
+  "Edit-LazyVim-Base-Config" =            { Set-Location "$HOME\AppData\Local\nvim-data\lazy\LazyVim\lua\lazyvim"; nvim 'init.lua'; profile}
   "Get-Environment-Variables" =           { Get-ChildItem env:* | sort-object name}
   "Go-To-Appdata" =                       { Set-Location "$HOME\AppData\"}
 # Script Based Function Aliases:
@@ -139,3 +141,5 @@ $userPaths = @(
 # EXPLICIT AUTO SCRIPT CALLS: IMPORTANT: YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING AUTO-SCRIPTS
     Start-SSHAgent
     Share-Profile-With-VSCode-Extension
+# Going straight to the 'Powershell profile' folder on entering terminal.
+    profile
