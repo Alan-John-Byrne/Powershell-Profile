@@ -1,17 +1,16 @@
-# Note: function reload { . $PROFILE }, FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
-# Note: Elevating permissions using gsudo (sudo) [Requires 'gsudo' package]
+# NOTE: function reload { . $PROFILE }, FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
 
+# WARN: EXTRA SETTINGS
 # IMPORTANT: Below is how to configure oh-my-posh theme (MUST HAVE INSTALLED oh-my-posh VIA CHOCOLATEY)
-# NOTE: Initialsing prompt theme using 'oh-my-posh'. (Disable / Enable - But comment out Prompt Alias prior to doing so)
+# TODO: Initialsing prompt theme using 'oh-my-posh'. (Disable / Enable - But comment out Prompt Alias prior to doing so)
 # oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\gruvbox.omp.json" | Invoke-Expression
-
-# TURNING AUTO-COMPLETE OFF BY DEFAULT:
+# IMPORTANT: TURNING AUTO-COMPLETE OFF BY DEFAULT:
 Set-PSReadLineOption -PredictionSource None
-# Scripts Directory
-$ScriptsDir = "$HOME\Documents\Powershell\scripts"
+
+# IMPORTANT: Setting up aliases, with corresponding functional name descriptors.
 # Aliases Used: (You can pass arguments as normal to these aliases, as if you were passing to functions or scripts.)
 $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
-  "sudo" = "gsudo"
+  "sudo" = "gsudo" # NOTE: Elevating permissions using gsudo (sudo) [Requires 'gsudo' package]
 # Regular Function Aliases:
     "edit" = "Edit-PowerShell-Profile"
     "nvim-config" = "Edit-Nvim-Config"
@@ -45,10 +44,11 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
     "generate-cert-pfx" = "Create-Certificate"
     "sign-executable" = "Sign-Exectuable-With-Certificate"
 }
-# Specifying and setting the corresponding aliases to the global functions set.
-foreach ($alias in $AliasDefinitions.GetEnumerator()) {
-  Set-Alias -Name $alias.Key -Value $alias.Value
-}
+
+
+# IMPORTANT: Setting up corresponding functions which pair with the aliases above.
+# Defining Scripts Directory.
+$ScriptsDir = "$HOME\Documents\Powershell\scripts"
 # Corresponding Functions Used:
 $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
 # Regular Function Aliases:
@@ -81,20 +81,16 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Add-Path-To-Env-Variables" =           { param($NewPath); & "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath}
   "Create-Certificate" =                  { param($SubjectName, $Pass, $PfxFilePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -Password $Password -PfxFilePath $PfxFilePath }
   "Sign-Exectuable-With-Certificate" =    { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
-# Auto Scripts (No Alias Required):
+# AUTO SCRIPTS (No Alias Required):
 # Called Automatically:
   "Prompt" =                              { & "$ScriptsDir\appearance.ps1" } # Changing Appearance.
 # Explicitly Called Scripts:
     "Start-SSHAgent" =                      { & "$ScriptsDir\start-ssh-agent.ps1" }
-  "Share-Profile-With-VSCode-Extension" = { Get-Content -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "$HOME\Documents\PowerShell\profile.ps1" }
-}
-# Initialising all functions as global functions that can be called from anywhere.
-foreach ($functionName in $FunctionDefinitions.Keys) {
-  Set-Item -Path "function:\global:$functionName" -Value $FunctionDefinitions[$functionName]
+"Share-Profile-With-VSCode-Extension" = { Get-Content -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "$HOME\Documents\PowerShell\profile.ps1" }
 }
 
-# WARN: ENVIRONMENT VARIABLES:
 
+# IMPORTANT: ENVIRONMENT VARIABLES:
 # NOTE: SETTING LOCAL ENVIRONMENT VARIABLES. (WILL DIFFER DEPENDING ON SOFTWARE USED BY YOUR MACHINE)
 # Set INCLUDE path
 $vcIncludePath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30133\include"
@@ -138,8 +134,29 @@ $userPaths = @(
     $updatedUserPaths = ($currentUserPaths + $userPaths) | Select-Object -Unique
     $env:Path = $updatedUserPaths -join ';'
 
-# EXPLICIT AUTO SCRIPT CALLS: IMPORTANT: YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING AUTO-SCRIPTS
-    Start-SSHAgent
-    Share-Profile-With-VSCode-Extension
+# IMPORTANT: Sourcing extended aliases.
+. $PSScriptRoot\temp_aliases.ps1
+# Adding sourced temporary aliases:
+$AliasDefinitions += $ExpandedAliases
+# Adding sourced temporary function aliases:
+$FunctionDefinitions += $ExpandedFunctionDefinitions
+# Specifying and setting the corresponding aliases to the global functions set.
+foreach ($alias in $AliasDefinitions.GetEnumerator()) {
+   Set-Alias -Name $alias.Key -Value $alias.Value
+}
+# Initialising all alias functions as global functions. Can be called from anywhere.
+foreach ($functionName in $FunctionDefinitions.Keys) {
+   Set-Item -Path "function:\global:$functionName" -Value $FunctionDefinitions[$functionName]
+}
+# If starting from powershell, we copy over the profile.
+# NOTE:  (Prevents duplicate terminals on startup in VSCODE)
+$currentScriptName = Split-Path -Leaf $PSCommandPath
+if ($currentScriptName.Contains('Microsoft')){
+Share-Profile-With-VSCode-Extension
+}
+
+# IMPORTANT: YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING AUTO-SCRIPTS.
+# NOTE: EXPLICIT AUTO SCRIPT CALLS:
+Start-SSHAgent
 # Going straight to the 'Powershell profile' folder on entering terminal.
-    profile
+profile
