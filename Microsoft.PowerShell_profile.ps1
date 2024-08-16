@@ -11,47 +11,47 @@ Set-PSReadLineOption -PredictionSource None
 # Aliases Used: (You can pass arguments as normal to these aliases, as if you were passing to functions or scripts.)
 $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "sudo" = "gsudo" # NOTE: Elevating permissions using gsudo (sudo) [Requires 'gsudo' package]
-# Regular Function Aliases:
-    "edit" = "Edit-PowerShell-Profile"
-    "nvim-config" = "Edit-Nvim-Config"
-    "nvim-config-lazy" = "Edit-LazyVim-Base-Config"
-    "nvim-path" = "Go-To-Nvim-Repo-Path"
-    "nvim-plugins" = "Go-To-Nvim-Plugins-Path"
-    "profile" = "Go-To-PowerShell-Profile"
-    "ps-v" = "Get-PowerShell-Version"
-    "open" = "Open-Current-Directory"
-    "sshome" = "SSH-Location"
-    "bot" = "Tail"
-    "top" = "Head"
-    "get-username" = "Get-Current-User-Username"
-    "test-git" = "Check-GitHub-SSH-Connection"
-    "gdg" = "Go-To-Godot-Games"
-    "scripts" = "Go-To-PowerShell-Scripts"
-    "desktop" = "Go-To-Desktop"
-    "prof-dir" = "Get-Powershell-Profile-Location"
-    "env-vars" = "Get-Environment-Variables"
-    "appdata" = "Go-To-Appdata"
-# Script Based Function Aliases:
-    "autocomplete" = "Toggle-AutoComplete"
-    "aliases" = "Show-Profile-Aliases"
-    "get-prof" = "Get-Profile"
-    "pskg" = "PowerShell-Package-Manager"
-    "set-local-cred" = "Set-GitLocalCredentials"
-    "cred" = "Get-GitLocalCredentials"
-    "touch" = "Create-File" 
-    "scripts-out" = "Show-PowerShell-Script-Names"
-    "env-add-path" = "Add-Path-To-Env-Variables"
-    "generate-cert-pfx" = "Create-Certificate"
-    "sign-executable" = "Sign-Exectuable-With-Certificate"
+  # Regular Function Aliases:
+  "test" = "Go-To-Code-Testing"
+  "edit" = "Edit-PowerShell-Profile"
+  "nvim-config" = "Edit-Nvim-Config"
+  "nvim-config-lazy" = "Edit-LazyVim-Base-Config"
+  "nvim-path" = "Go-To-Nvim-Repo-Path"
+  "nvim-plugins" = "Go-To-Nvim-Plugins-Path"
+  "profile" = "Go-To-PowerShell-Profile"
+  "ps-v" = "Get-PowerShell-Version"
+  "open" = "Open-Current-Directory"
+  "sshome" = "SSH-Location"
+  "get-username" = "Get-Current-User-Username"
+  "test-git" = "Check-GitHub-SSH-Connection"
+  "gdg" = "Go-To-Godot-Games"
+  "scripts" = "Go-To-PowerShell-Scripts"
+  "desktop" = "Go-To-Desktop"
+  "prof-dir" = "Get-Powershell-Profile-Location"
+  "env-vars" = "Get-Environment-Variables"
+  "appdata" = "Go-To-Appdata"
+  "start-wsl" = "Start-WSL-Service"
+  # Script Based Function Aliases:
+  "autocomplete" = "Toggle-AutoComplete"
+  "aliases" = "Show-Profile-Aliases"
+  "get-prof" = "Get-Profile"
+  "pskg" = "PowerShell-Package-Manager"
+  "set-local-cred" = "Set-GitLocalCredentials"
+  "cred" = "Get-GitLocalCredentials"
+  "touch" = "Create-File" 
+  "scripts-out" = "Show-PowerShell-Script-Names"
+  "env-add-path" = "Add-Path-To-Env-Variables"
+  "generate-cert-pfx" = "Create-Certificate"
+  "sign-executable" = "Sign-Exectuable-With-Certificate"
 }
-
 
 # IMPORTANT: Setting up corresponding functions which pair with the aliases above.
 # Defining Scripts Directory.
 $ScriptsDir = "$HOME\Documents\Powershell\scripts"
 # Corresponding Functions Used:
 $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
-# Regular Function Aliases:
+  # Regular Function Aliases:
+  "Go-To-Code-Testing" =                  { Set-Location "C:\Users\alanj\Documents\PowerShell\code_testing"}
   "Show-Profile-Aliases" =                { Write-Host "`nPowershell Profile Aliases:`n$($AliasDefinitions.GetEnumerator() | Format-Table -Property Name, Value -AutoSize | Out-String)" }
   "Edit-PowerShell-Profile" =             { nvim $(get-prof) }
   "Go-To-PowerShell-Profile" =            { Set-Location "$HOME\Documents\Powershell" }
@@ -70,7 +70,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Edit-LazyVim-Base-Config" =            { Set-Location "$HOME\AppData\Local\nvim-data\lazy\LazyVim\lua\lazyvim"; nvim 'init.lua'; profile}
   "Get-Environment-Variables" =           { Get-ChildItem env:* | sort-object name}
   "Go-To-Appdata" =                       { Set-Location "$HOME\AppData\"}
-# Script Based Function Aliases:
+  # Script Based Function Aliases:
   "Toggle-AutoComplete" =                 { & "$ScriptsDir\toggle-autocomplete.ps1" }
   "Get-Profile" =                         { & "$ScriptsDir\get-profile.ps1" }
   "PowerShell-Package-Manager" =          { param($command, $packageName); & "$ScriptsDir\package-manager.ps1" -command $command -packageName $packageName }
@@ -81,14 +81,14 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Add-Path-To-Env-Variables" =           { param($NewPath); & "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath}
   "Create-Certificate" =                  { param($SubjectName, $Pass, $PfxFilePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -Password $Password -PfxFilePath $PfxFilePath }
   "Sign-Exectuable-With-Certificate" =    { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
-# AUTO SCRIPTS (No Alias Required):
-# Called Automatically:
+  "Start-WSL-Service" =                     { & "$ScriptsDir\start-wsl.ps1" }
+  # AUTO SCRIPTS (No Alias Required):
+  # Called Automatically:
   "Prompt" =                              { & "$ScriptsDir\appearance.ps1" } # Changing Appearance.
-# Explicitly Called Scripts:
-    "Start-SSHAgent" =                      { & "$ScriptsDir\start-ssh-agent.ps1" }
-"Share-Profile-With-VSCode-Extension" = { Get-Content -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "$HOME\Documents\PowerShell\profile.ps1" }
+  # Explicitly Called Scripts:
+  "Start-SSHAgent" =                      { & "$ScriptsDir\start-ssh-agent.ps1" }
+  "Share-Profile-With-VSCode-Extension" = { Get-Content -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "$HOME\Documents\PowerShell\profile.ps1" }
 }
-
 
 # IMPORTANT: ENVIRONMENT VARIABLES:
 # NOTE: SETTING LOCAL ENVIRONMENT VARIABLES. (WILL DIFFER DEPENDING ON SOFTWARE USED BY YOUR MACHINE)
@@ -104,35 +104,35 @@ $sdkLibPath = "${env:ProgramFiles(x86)}\Windows Kits\11\Lib\10.0.22000.0\um\x64"
 $env:LIB = "$vcLibPath;$ucrtLibPath;$sdkLibPath"
 # User-specific paths
 $userPaths = @(
-    "C:\Windows\System32\OpenSSH\",
-    "C:\mingw64\bin",# NOTE:  Essential for Tree-sitter in Neovim: provides GCC toolchain for compiling language grammars and native modules
-    "D:\Gradle\gradle-7.6.4\bin",
-    "D:\Microsoft VS Code\bin",
-    "D:\PuTTY\",
-    "$HOME\AppData\Local\Programs\Python\Python38",
-    "$HOME\AppData\Local\Android\Sdk\platform-tools",
-    "$HOME\.cargo\bin",
-    "$HOME\AppData\Local\Microsoft\WindowsApps",
-    "$HOME\.dotnet\tools",
-    "$HOME\AppData\Roaming\npm",
-    "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
-    "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
-    "${env:ProgramFiles}\CMake\bin",
-    "${env:ProgramData}\chocolatey\bin",
-    "${env:ProgramFiles}\Git\cmd",
-    "${env:ProgramFiles}\nodejs",
-    "${env:ProgramFiles}\Docker\Docker\resources\bin",
-    "${env:ProgramFiles}\PowerShell\7\",
-    "${env:ProgramFiles}\Common Files\Oracle\Java\javapath",
-    "${env:ProgramFiles}\Microsoft SQL Server\150\Tools\Binn\",
-    "${env:ProgramFiles}\dotnet\",
-    "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA NvDLISR",
-    "${env:ProgramFiles}\gsudo\Current"
-    "${env:ProgramFiles}\Lua" # Proper Lua registration.
-    )
-    $currentUserPaths = $env:Path -split ';'
-    $updatedUserPaths = ($currentUserPaths + $userPaths) | Select-Object -Unique
-    $env:Path = $updatedUserPaths -join ';'
+  "C:\Windows\System32\OpenSSH\",
+  "C:\mingw64\bin",# NOTE:  Essential for Tree-sitter in Neovim: provides GCC toolchain for compiling language grammars and native modules
+  "D:\Gradle\gradle-7.6.4\bin",
+  "D:\Microsoft VS Code\bin",
+  "D:\PuTTY\",
+  "$HOME\AppData\Local\Programs\Python\Python38",
+  "$HOME\AppData\Local\Android\Sdk\platform-tools",
+  "$HOME\.cargo\bin",
+  "$HOME\AppData\Local\Microsoft\WindowsApps",
+  "$HOME\.dotnet\tools",
+  "$HOME\AppData\Roaming\npm",
+  "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
+  "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
+  "${env:ProgramFiles}\CMake\bin",
+  "${env:ProgramData}\chocolatey\bin",
+  "${env:ProgramFiles}\Git\cmd",
+  "${env:ProgramFiles}\nodejs",
+  "${env:ProgramFiles}\Docker\Docker\resources\bin",
+  "${env:ProgramFiles}\PowerShell\7\",
+  "${env:ProgramFiles}\Common Files\Oracle\Java\javapath",
+  "${env:ProgramFiles}\Microsoft SQL Server\150\Tools\Binn\",
+  "${env:ProgramFiles}\dotnet\",
+  "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA NvDLISR",
+  "${env:ProgramFiles}\gsudo\Current"
+  "${env:ProgramFiles}\Lua" # Proper Lua registration.
+)
+$currentUserPaths = $env:Path -split ';'
+$updatedUserPaths = ($currentUserPaths + $userPaths) | Select-Object -Unique
+$env:Path = $updatedUserPaths -join ';'
 
 # IMPORTANT: Sourcing extended aliases.
 . $PSScriptRoot\temp_aliases.ps1
@@ -142,17 +142,17 @@ $AliasDefinitions += $ExpandedAliases
 $FunctionDefinitions += $ExpandedFunctionDefinitions
 # Specifying and setting the corresponding aliases to the global functions set.
 foreach ($alias in $AliasDefinitions.GetEnumerator()) {
-   Set-Alias -Name $alias.Key -Value $alias.Value
+  Set-Alias -Name $alias.Key -Value $alias.Value
 }
 # Initialising all alias functions as global functions. Can be called from anywhere.
 foreach ($functionName in $FunctionDefinitions.Keys) {
-   Set-Item -Path "function:\global:$functionName" -Value $FunctionDefinitions[$functionName]
+  Set-Item -Path "function:\global:$functionName" -Value $FunctionDefinitions[$functionName]
 }
 # If starting from powershell, we copy over the profile.
 # NOTE:  (Prevents duplicate terminals on startup in VSCODE)
 $currentScriptName = Split-Path -Leaf $PSCommandPath
 if ($currentScriptName.Contains('Microsoft')){
-Share-Profile-With-VSCode-Extension
+  Share-Profile-With-VSCode-Extension
 }
 
 # IMPORTANT: YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING AUTO-SCRIPTS.
