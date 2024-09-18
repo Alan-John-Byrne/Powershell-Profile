@@ -15,7 +15,7 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "test" = "Go-To-Code-Testing"
   "edit" = "Edit-PowerShell-Profile"
   "nvim-config" = "Edit-Nvim-Config"
-  "nvim-config-lazy" = "Edit-LazyVim-Base-Config"
+  "nvim-config-lazy" = "Edit-LazyVim-Base-Config" # Not ever necessary really!
   "nvim-path" = "Go-To-Nvim-Repo-Path"
   "nvim-plugins" = "Go-To-Nvim-Plugins-Path"
   "profile" = "Go-To-PowerShell-Profile"
@@ -43,6 +43,7 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "env-add-path" = "Add-Path-To-Env-Variables"
   "generate-cert-pfx" = "Create-Certificate"
   "sign-executable" = "Sign-Exectuable-With-Certificate"
+  "runjava" = "Compile-And-Run-Java"
 }
 
 # IMPORTANT: Setting up corresponding functions which pair with the aliases above.
@@ -81,8 +82,10 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Add-Path-To-Env-Variables" =           { param($NewPath); & "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath}
   "Create-Certificate" =                  { param($SubjectName, $Pass, $PfxFilePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -Password $Password -PfxFilePath $PfxFilePath }
   "Sign-Exectuable-With-Certificate" =    { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
-  "Start-WSL-Service" =                     { & "$ScriptsDir\start-wsl.ps1" }
-  # AUTO SCRIPTS (No Alias Required):
+  "Start-WSL-Service" =                   { & "$ScriptsDir\start-wsl.ps1" }
+  "Compile-And-Run-Java" =                { param($FullPackagePath); & "$ScriptsDir\compile_and_run_java" -FullPackagePath $FullPackagePath }
+
+  # AUTO SCRIPTS (No Alias Required): 
   # Called Automatically:
   "Prompt" =                              { & "$ScriptsDir\appearance.ps1" } # Changing Appearance.
   # Explicitly Called Scripts:
@@ -102,6 +105,8 @@ $vcLibPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\BuildTools\V
 $ucrtLibPath = "${env:ProgramFiles(x86)}\Windows Kits\11\Lib\10.0.22000.0\ucrt\x64"
 $sdkLibPath = "${env:ProgramFiles(x86)}\Windows Kits\11\Lib\10.0.22000.0\um\x64"
 $env:LIB = "$vcLibPath;$ucrtLibPath;$sdkLibPath"
+# IMPORTANT: Java Setup: JAVA JDK INSTALLATION REQUIRED.
+$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" #  NOTE: Standard (required) for Java, the 'JAVA_HOME' locates the JDK tools needed by programs.
 # User-specific paths
 $userPaths = @(
   "C:\Windows\System32\OpenSSH\",
@@ -115,10 +120,11 @@ $userPaths = @(
   "$HOME\AppData\Local\Microsoft\WindowsApps",
   "$HOME\.dotnet\tools",
   "$HOME\AppData\Roaming\npm",
+  "${env:ProgramData}\chocolatey\bin",
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
+  "${env:ProgramFiles}\Go\bin", # IMPORTANT: Golang Setup. GOLANG INSTALLATION REQUIRED.
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
   "${env:ProgramFiles}\CMake\bin",
-  "${env:ProgramData}\chocolatey\bin",
   "${env:ProgramFiles}\Git\cmd",
   "${env:ProgramFiles}\nodejs",
   "${env:ProgramFiles}\Docker\Docker\resources\bin",
@@ -128,7 +134,8 @@ $userPaths = @(
   "${env:ProgramFiles}\dotnet\",
   "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA NvDLISR",
   "${env:ProgramFiles}\gsudo\Current"
-  "${env:ProgramFiles}\Lua" # Proper Lua registration.
+  "${env:ProgramFiles}\Lua", # Proper Lua registration.
+  "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
 )
 $currentUserPaths = $env:Path -split ';'
 $updatedUserPaths = ($currentUserPaths + $userPaths) | Select-Object -Unique
