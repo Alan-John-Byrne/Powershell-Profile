@@ -105,8 +105,8 @@ $vcLibPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\BuildTools\V
 $ucrtLibPath = "${env:ProgramFiles(x86)}\Windows Kits\11\Lib\10.0.22000.0\ucrt\x64"
 $sdkLibPath = "${env:ProgramFiles(x86)}\Windows Kits\11\Lib\10.0.22000.0\um\x64"
 $env:LIB = "$vcLibPath;$ucrtLibPath;$sdkLibPath"
-# Java Setup:
-$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" # Standard (required) for Java, the 'JAVA_HOME' helps locating the JDK tools needed by programs.
+# IMPORTANT: Java Setup: JAVA JDK INSTALLATION REQUIRED.
+$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" #  NOTE: Standard (required) for Java, the 'JAVA_HOME' locates the JDK tools needed by programs.
 # User-specific paths
 $userPaths = @(
   "C:\Windows\System32\OpenSSH\",
@@ -120,11 +120,11 @@ $userPaths = @(
   "$HOME\AppData\Local\Microsoft\WindowsApps",
   "$HOME\.dotnet\tools",
   "$HOME\AppData\Roaming\npm",
-  "${env:ProgramFiles}\Go\bin", # Golang Setup.
+  "${env:ProgramData}\chocolatey\bin",
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
+  "${env:ProgramFiles}\Go\bin", # IMPORTANT: Golang Setup. GOLANG INSTALLATION REQUIRED.
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
   "${env:ProgramFiles}\CMake\bin",
-  "${env:ProgramData}\chocolatey\bin",
   "${env:ProgramFiles}\Git\cmd",
   "${env:ProgramFiles}\nodejs",
   "${env:ProgramFiles}\Docker\Docker\resources\bin",
@@ -134,6 +134,8 @@ $userPaths = @(
   "${env:ProgramFiles}\dotnet\",
   "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA NvDLISR",
   "${env:ProgramFiles}\gsudo\Current"
+  "${env:ProgramFiles}\Lua", # Proper Lua registration.
+  "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
   "${env:ProgramFiles}\Lua", # Proper Lua registration.
   "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
 )

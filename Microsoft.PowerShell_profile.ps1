@@ -136,6 +136,8 @@ $userPaths = @(
   "${env:ProgramFiles}\gsudo\Current"
   "${env:ProgramFiles}\Lua", # Proper Lua registration.
   "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
+  "${env:ProgramFiles}\Lua", # Proper Lua registration.
+  "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
 )
 $currentUserPaths = $env:Path -split ';'
 $updatedUserPaths = ($currentUserPaths + $userPaths) | Select-Object -Unique
