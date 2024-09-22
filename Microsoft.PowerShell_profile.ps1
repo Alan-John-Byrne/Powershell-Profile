@@ -96,29 +96,29 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
 # IMPORTANT: ENVIRONMENT VARIABLES:
 # NOTE: SETTING LOCAL ENVIRONMENT VARIABLES. (WILL DIFFER DEPENDING ON SOFTWARE USED BY YOUR MACHINE)
 # Set INCLUDE path
-$vcIncludePath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30133\include"
-$ucrtIncludePath = "${env:ProgramFiles(x86)}\Windows Kits\11\Include\10.0.22000.0\ucrt"
-$sdkIncludePath = "${env:ProgramFiles(x86)}\Windows Kits\11\Include\10.0.22000.0\shared"
+$vcIncludePath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.41.34120\include"
+$ucrtIncludePath = "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.22621.0\ucrt"
+$sdkIncludePath = "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.22621.0\shared"
 $env:INCLUDE = "$vcIncludePath;$ucrtIncludePath;$sdkIncludePath"
 # Set LIB path
-$vcLibPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC\14.29.30133\lib\x64"
-$ucrtLibPath = "${env:ProgramFiles(x86)}\Windows Kits\11\Lib\10.0.22000.0\ucrt\x64"
-$sdkLibPath = "${env:ProgramFiles(x86)}\Windows Kits\11\Lib\10.0.22000.0\um\x64"
+$vcLibPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.41.34120\lib\x64"
+$ucrtLibPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Lib\10.0.22621.0\ucrt\x64"
+$sdkLibPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Lib\10.0.22621.0\um\x64"
 $env:LIB = "$vcLibPath;$ucrtLibPath;$sdkLibPath"
 # IMPORTANT: Java Setup: JAVA JDK INSTALLATION REQUIRED.
 $env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" #  NOTE: Standard (required) for Java, the 'JAVA_HOME' locates the JDK tools needed by programs.
 # User-specific paths
 $userPaths = @(
   "C:\Windows\System32\OpenSSH\",
-  "C:\mingw64\bin",# NOTE:  Essential for Tree-sitter in Neovim: provides GCC toolchain for compiling language grammars and native modules
+  "C:\mingw64\bin",# NOTE:  Essential for Tree-sitter in Neovim: provides GCC toolchain for compiling language grammars and native modules.
   "D:\Gradle\gradle-7.6.4\bin",
   "D:\Microsoft VS Code\bin",
   "D:\PuTTY\",
+  "$HOME\.cargo\bin",
+  "$HOME\.dotnet\tools",
   "$HOME\AppData\Local\Programs\Python\Python38",
   "$HOME\AppData\Local\Android\Sdk\platform-tools",
-  "$HOME\.cargo\bin",
   "$HOME\AppData\Local\Microsoft\WindowsApps",
-  "$HOME\.dotnet\tools",
   "$HOME\AppData\Roaming\npm",
   "${env:ProgramData}\chocolatey\bin",
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
