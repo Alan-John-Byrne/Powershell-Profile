@@ -31,6 +31,7 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "env-vars" = "Get-Environment-Variables"
   "appdata" = "Go-To-Appdata"
   "start-wsl" = "Start-WSL-Service"
+  "runjava" = "Gradle-Run-Java"
   # Script Based Function Aliases:
   "autocomplete" = "Toggle-AutoComplete"
   "aliases" = "Show-Profile-Aliases"
@@ -43,7 +44,6 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "env-add-path" = "Add-Path-To-Env-Variables"
   "generate-cert-pfx" = "Create-Certificate"
   "sign-executable" = "Sign-Exectuable-With-Certificate"
-  "runjava" = "Compile-And-Run-Java"
 }
 
 # IMPORTANT: Setting up corresponding functions which pair with the aliases above.
@@ -71,6 +71,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Edit-LazyVim-Base-Config" =            { Set-Location "$HOME\AppData\Local\nvim-data\lazy\LazyVim\lua\lazyvim"; nvim 'init.lua'; profile}
   "Get-Environment-Variables" =           { Get-ChildItem env:* | sort-object name}
   "Go-To-Appdata" =                       { Set-Location "$HOME\AppData\"}
+  "Gradle-Run-Java" =                     { .\gradlew run }
   # Script Based Function Aliases:
   "Toggle-AutoComplete" =                 { & "$ScriptsDir\toggle-autocomplete.ps1" }
   "Get-Profile" =                         { & "$ScriptsDir\get-profile.ps1" }
@@ -83,7 +84,6 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Create-Certificate" =                  { param($SubjectName, $Pass, $PfxFilePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -Password $Password -PfxFilePath $PfxFilePath }
   "Sign-Exectuable-With-Certificate" =    { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
   "Start-WSL-Service" =                   { & "$ScriptsDir\start-wsl.ps1" }
-  "Compile-And-Run-Java" =                { param($FullPackagePath); & "$ScriptsDir\compile_and_run_java" -FullPackagePath $FullPackagePath }
 
   # AUTO SCRIPTS (No Alias Required): 
   # Called Automatically:
@@ -106,12 +106,13 @@ $ucrtLibPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Lib\10.0.22621.0\ucrt\x
 $sdkLibPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Lib\10.0.22621.0\um\x64"
 $env:LIB = "$vcLibPath;$ucrtLibPath;$sdkLibPath"
 # IMPORTANT: Java Setup: JAVA JDK INSTALLATION REQUIRED.
-$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" #  NOTE: Standard (required) for Java, the 'JAVA_HOME' locates the JDK tools needed by programs.
+$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" # NOTE: Standard (required) for Java, the 'JAVA_HOME' locates the JDK tools needed by programs.
+$env:Java = "${env:ProgramFiles}\Java\jdk-21\bin\java.exe" # IMPORTANT: Must ensure java version is compatible with gradle build tools version.
 # User-specific paths
 $userPaths = @(
   "C:\Windows\System32\OpenSSH\",
   "C:\mingw64\bin",# NOTE:  Essential for Tree-sitter in Neovim: provides GCC toolchain for compiling language grammars and native modules.
-  "D:\Gradle\gradle-7.6.4\bin",
+  "D:\Gradle\gradle-8.5\bin", # IMPORTANT: Build tools required for creating java projects.
   "D:\Microsoft VS Code\bin",
   "D:\PuTTY\",
   "$HOME\.cargo\bin",
