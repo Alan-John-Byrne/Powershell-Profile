@@ -117,11 +117,13 @@ $userPaths = @(
   "D:\PuTTY\",
   "$HOME\.cargo\bin",
   "$HOME\.dotnet\tools",
-  "$HOME\AppData\Local\Programs\Python\Python38",
   "$HOME\AppData\Local\Android\Sdk\platform-tools",
   "$HOME\AppData\Local\Microsoft\WindowsApps",
   "$HOME\AppData\Roaming\npm",
+  "$HOME\AppData\Local\Programs\Python\Python313", # NOTE: Python 3.13 installation.
+  "$HOME\AppData\Local\Programs\Python\Python313\Scripts", # IMPORTANT: Python Modules. (eg: pip)
   "${env:ProgramData}\chocolatey\bin",
+  "${env:ProgramData}\chocolatey\lib\ninja\tools" # NOTE: Ninja build tools required by CMake for C++ projects.
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
   "${env:ProgramFiles}\Go\bin", # IMPORTANT: Golang Setup. GOLANG INSTALLATION REQUIRED.
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
@@ -149,17 +151,20 @@ $AliasDefinitions += $ExpandedAliases
 # Adding sourced temporary function aliases:
 $FunctionDefinitions += $ExpandedFunctionDefinitions
 # Specifying and setting the corresponding aliases to the global functions set.
-foreach ($alias in $AliasDefinitions.GetEnumerator()) {
+foreach ($alias in $AliasDefinitions.GetEnumerator())
+{
   Set-Alias -Name $alias.Key -Value $alias.Value
 }
 # Initialising all alias functions as global functions. Can be called from anywhere.
-foreach ($functionName in $FunctionDefinitions.Keys) {
+foreach ($functionName in $FunctionDefinitions.Keys)
+{
   Set-Item -Path "function:\global:$functionName" -Value $FunctionDefinitions[$functionName]
 }
 # If starting from powershell, we copy over the profile.
 # NOTE:  (Prevents duplicate terminals on startup in VSCODE)
 $currentScriptName = Split-Path -Leaf $PSCommandPath
-if ($currentScriptName.Contains('Microsoft')){
+if ($currentScriptName.Contains('Microsoft'))
+{
   Share-Profile-With-VSCode-Extension
 }
 
@@ -167,4 +172,7 @@ if ($currentScriptName.Contains('Microsoft')){
 # NOTE: EXPLICIT AUTO SCRIPT CALLS:
 Start-SSHAgent
 # Going straight to the 'Powershell profile' folder on entering terminal.
-profile
+if (!$env:VIRTUAL_ENV) # IMPORTANT: Only if we are not currently in a virtual python environment:
+{
+  profile
+}
