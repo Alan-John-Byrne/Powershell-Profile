@@ -123,7 +123,7 @@ $userPaths = @(
   "$HOME\AppData\Local\Programs\Python\Python313", # NOTE: Python 3.13 installation.
   "$HOME\AppData\Local\Programs\Python\Python313\Scripts", # IMPORTANT: Python Modules. (eg: pip)
   "${env:ProgramData}\chocolatey\bin",
-  "${env:ProgramData}\chocolatey\lib\ninja\tools" # NOTE: Ninja build tools required by CMake for C++ projects.
+  "${env:ProgramData}\chocolatey\lib\ninja\tools" # NOTE: Ninja build tools required by CMake for C++ projects in neovim.
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
   "${env:ProgramFiles}\Go\bin", # IMPORTANT: Golang Setup. GOLANG INSTALLATION REQUIRED.
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
