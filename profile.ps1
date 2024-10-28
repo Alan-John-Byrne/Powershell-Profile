@@ -32,6 +32,8 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "appdata" = "Go-To-Appdata"
   "start-wsl" = "Start-WSL-Service"
   "runjava" = "Gradle-Run-Java"
+  "buildcpp" = "Build-CPP-Program"
+  "runcpp" = "Run-Cpp"
   # Script Based Function Aliases:
   "autocomplete" = "Toggle-AutoComplete"
   "aliases" = "Show-Profile-Aliases"
@@ -72,6 +74,8 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Get-Environment-Variables" =           { Get-ChildItem env:* | sort-object name}
   "Go-To-Appdata" =                       { Set-Location "$HOME\AppData\"}
   "Gradle-Run-Java" =                     { .\gradlew run }
+  "Build-CPP-Program" =                   { cmake -S . -B build ; cmake --build build}
+  "Run-Cpp" =                             { ./bin/*.exe }
   # Script Based Function Aliases:
   "Toggle-AutoComplete" =                 { & "$ScriptsDir\toggle-autocomplete.ps1" }
   "Get-Profile" =                         { & "$ScriptsDir\get-profile.ps1" }
@@ -108,6 +112,9 @@ $env:LIB = "$vcLibPath;$ucrtLibPath;$sdkLibPath"
 # IMPORTANT: Java Setup: JAVA JDK INSTALLATION REQUIRED.
 $env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" # NOTE: Standard (required) for Java, the 'JAVA_HOME' locates the JDK tools needed by programs.
 $env:Java = "${env:ProgramFiles}\Java\jdk-21\bin\java.exe" # IMPORTANT: Must ensure java version is compatible with gradle build tools version.
+# IMPORTANT: C++ & C Setup: NINJA BUILD TOOLS INSTALLATION REQUIRED.
+$env:CMAKE_GENERATOR = "Ninja" # NOTE: Specifying the default build system / tools used by CMake to compile and link projects from CMakeLists.txt files.
+$env:CMAKE_EXPORT_COMPILE_COMMANDS = "ON" # IMPORTANT: We need to tell the Ninja generator to create instructions for the clangd lsp, how projects are structured.
 # User-specific paths
 $userPaths = @(
   "C:\Windows\System32\OpenSSH\",
@@ -123,7 +130,7 @@ $userPaths = @(
   "$HOME\AppData\Local\Programs\Python\Python313", # NOTE: Python 3.13 installation.
   "$HOME\AppData\Local\Programs\Python\Python313\Scripts", # IMPORTANT: Python Modules. (eg: pip)
   "${env:ProgramData}\chocolatey\bin",
-  "${env:ProgramData}\chocolatey\lib\ninja\tools" # NOTE: Ninja build tools required by CMake for C++ projects.
+  "${env:ProgramData}\chocolatey\lib\ninja\tools" # NOTE: Ninja build tools required by CMake for C++ projects in neovim.
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
   "${env:ProgramFiles}\Go\bin", # IMPORTANT: Golang Setup. GOLANG INSTALLATION REQUIRED.
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
