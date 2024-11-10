@@ -19,8 +19,9 @@ if ($currentDrive -eq 'C')
   $userNameFromPath = $PWD.Path.Substring($indexOfChar + 1)
   $indexOfUsername = $currentLocation.Path.IndexOf($userNameFromPath)
   $currentPath = $currentLocation.Path.Substring($indexOfUsername)
+  $username = (whoami | ForEach-Object { $_.Split('\') })[-1]
   # Check for if the username is in the current path, otherwise we are in root.
-  if ($PWD.Path.Contains($(get-username)))
+  if ($currentPath.Contains($username))
   {
     Write-Host "$currentDrive`:\\ $($virtual_env) " -ForegroundColor Green -NoNewline # IMPORTANT: If we are in a virtual environment, prepend that virtual environment name:
     Write-Host "@ User" -ForegroundColor Gray -NoNewline
@@ -28,9 +29,9 @@ if ($currentDrive -eq 'C')
     Write-Host "$currentPath" -ForegroundColor Cyan -NoNewline # Username in path (Necessary)
   } else
   {
-    $path = "$currentDrive`:\\ $($virtual_env) ~ root" + $PWD.Path.Insert(2, "\")
+    $path = "$currentDrive`:\\ ~ root $($virtual_env)" + $PWD.Path.Insert(2, "\")
     Write-Host "$($path.Substring(0, 11)) " -ForegroundColor Green -NoNewline # Green
-    Write-Host "$($path.Substring(14))" -ForegroundColor Cyan -NoNewline # Cyan
+    Write-Host "$($path.Substring(12, 36))" -ForegroundColor Cyan -NoNewline # Cyan
   }
 } else
 {
@@ -39,11 +40,11 @@ if ($currentDrive -eq 'C')
   $currentPath = $currentLocation.Path.Substring($indexOfChar + 1)
   if ($currentPath)
   {
-    Write-Host "$currentDrive`:\\ $($virtual_env) ~ root " -ForegroundColor Green -NoNewline # Green # IMPORTANT: If we are in a virtual environment, prepend that virtual environment name:
+    Write-Host "$currentDrive`:\\ ~ root $($virtual_env)" -ForegroundColor Green -NoNewline # Green # IMPORTANT: If we are in a virtual environment, prepend that virtual environment name:
     Write-Host "\$currentPath" -ForegroundColor Cyan -NoNewline # Cyan
   } else
   {
-    Write-Host "$currentDrive`:\\ $($virtual_env) ~ root" -ForegroundColor Green -NoNewline # Green
+    Write-Host "$currentDrive`:\\ ~ root $($virtual_env)" -ForegroundColor Green -NoNewline # Green
   }
 }
 # Nice little design:
