@@ -13,6 +13,7 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "sudo" =              "gsudo" # NOTE: Elevating permissions using gsudo (sudo) [Requires 'gsudo' package]
   # Regular Function Aliases:
   "edit" =              "Edit-PowerShell-Profile"
+  "open" =              "Open-Current-Directory"
   "aliases" =           "Show-Profile-Aliases"
   "coding" =            "Go-To-Coding-Workspace"
   "csdev" =             "Go-To-C#-Development-Workspace"
@@ -23,34 +24,33 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "cppdev" =            "Go-To-C++-Development-Workspace"
   "tsdev" =             "Go-To-Typescript-Development-Workspace"
   "godev" =             "Go-To-Golang-Development-Workspace"
-  "runjava" =           "Gradle-Run-Java"
-  "buildcpp" =          "Build-CPP-Program"
-  "runcpp" =            "Run-Cpp"
-  "nvim-config" =       "Edit-Nvim-Config"
-  "nvim-config-lazy" =  "Edit-LazyVim-Base-Config" # Not ever necessary really!
   "nvim-path" =         "Go-To-Nvim-Repo-Path"
   "nvim-plugins" =      "Go-To-Nvim-Plugins-Path"
   "profile" =           "Go-To-PowerShell-Profile"
-  "ps-v" =              "Get-PowerShell-Version"
-  "open" =              "Open-Current-Directory"
-  "sshome" =            "Go-To-SSH-Install-Location"
-  "get-username" =      "Get-Current-User-Username"
-  "test-git" =          "Check-GitHub-SSH-Connection"
   "gdg" =               "Go-To-Godot-Games"
   "scripts" =           "Go-To-PowerShell-Scripts"
   "desktop" =           "Go-To-Desktop"
-  "prof-dir" =          "Get-Powershell-Profile-Location"
-  "env-vars" =          "Get-Environment-Variables"
+  "sshome" =            "Go-To-SSH-Install-Location"
   "appdata" =           "Go-To-Appdata"
+  "nvim-config" =       "Edit-Nvim-Config"
+  "nvim-config-lazy" =  "Edit-LazyVim-Base-Config" # Not ever necessary really!
+  "ps-v" =              "Get-PowerShell-Version"
+  "env-vars" =          "Get-Environment-Variables"
+  "prof-dir" =          "Get-Powershell-Profile-Location"
+  "get-username" =      "Get-Current-User-Username"
+  "runjava" =           "Gradle-Run-Java"
+  "buildcpp" =          "Build-CPP-Program"
+  "runcpp" =            "Run-Cpp"
   "start-wsl" =         "Start-WSL-Service"
+  "test-git" =          "Check-GitHub-SSH-Connection"
   # Script Based Function Aliases:
-  "autocomplete" =      "Toggle-AutoComplete"
   "get-prof" =          "Get-Profile"
-  "pskg" =              "PowerShell-Package-Manager"
-  "set-local-cred" =    "Set-GitLocalCredentials"
   "cred" =              "Get-GitLocalCredentials"
-  "touch" =             "Create-File" 
+  "set-local-cred" =    "Set-GitLocalCredentials"
   "scripts-out" =       "Show-PowerShell-Script-Names"
+  "autocomplete" =      "Toggle-AutoComplete"
+  "pskg" =              "PowerShell-Package-Manager"
+  "touch" =             "Create-File" 
   "env-add-path" =      "Add-Path-To-Env-Variables"
   "generate-cert-pfx" = "Create-Certificate"
   "sign-executable" =   "Sign-Exectuable-With-Certificate"
@@ -84,22 +84,22 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Edit-Nvim-Config" =                        { Set-Location "$HOME\AppData\Local\nvim" ; nvim 'init.lua' ; profile }
   "Edit-LazyVim-Base-Config" =                { Set-Location "$HOME\AppData\Local\nvim-data\lazy\LazyVim\lua\lazyvim"; nvim 'init.lua'; profile}
   "Get-Powershell-Profile-Location" =         { return "$HOME\Documents\Powershell" }
-  "Get-PowerShell-Version" =                  { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
   "Get-Current-User-Username" =               { return (whoami | ForEach-Object { $_.Split('\') })[-1] }
+  "Get-PowerShell-Version" =                  { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
   "Get-Environment-Variables" =               { Get-ChildItem env:* | sort-object name}
   "Open-Current-Directory" =                  { Invoke-Item . }
-  "Check-GitHub-SSH-Connection" =             { ssh -T git@github.com }
   "Gradle-Run-Java" =                         { .\gradlew run }
   "Build-CPP-Program" =                       { cmake -S . -B build ; cmake --build build}
   "Run-Cpp" =                                 { ./bin/*.exe }
+  "Check-GitHub-SSH-Connection" =             { ssh -T git@github.com }
   # Script Based Function Aliases:
   "Get-Profile" =                             { & "$ScriptsDir\get-profile.ps1" }
   "Get-GitLocalCredentials" =                 { & "$ScriptsDir\git-get-cred.ps1" }
   "Set-GitLocalCredentials" =                 { param($localUsername, $localEmail); & "$ScriptsDir\git-set-cred.ps1" -localUsername $localUsername -localEmail $localEmail }
-  "Sign-Exectuable-With-Certificate" =        { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
   "Show-PowerShell-Script-Names" =            { & "$ScriptsDir\list-scripts.ps1" -scriptsPath $ScriptsDir }
   "Start-WSL-Service" =                       { & "$ScriptsDir\start-wsl.ps1" }
   "Toggle-AutoComplete" =                     { & "$ScriptsDir\toggle-autocomplete.ps1" }
+  "Sign-Exectuable-With-Certificate" =        { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
   "PowerShell-Package-Manager" =              { param($command, $packageName); & "$ScriptsDir\package-manager.ps1" -command $command -packageName $packageName }
   "Create-File" =                             { param($path_filename); & "$ScriptsDir\touch-create-file.ps1" -path_filename $path_filename }
   "Add-Path-To-Env-Variables" =               { param($NewPath); & "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath}
@@ -137,6 +137,7 @@ $userPaths = @(
   "D:\Gradle\gradle-7.3.3\bin", # IMPORTANT: Build tools required for creating java projects.
   "D:\Microsoft VS Code\bin",
   "D:\PuTTY\",
+  "C:\omnisharp\", # NOTE: Dependency required for c# support in neovim.
   "$HOME\.cargo\bin",
   "$HOME\.dotnet\tools",
   "$HOME\AppData\Local\Android\Sdk\platform-tools",
@@ -149,7 +150,9 @@ $userPaths = @(
   "${env:ProgramFiles(x86)}\oh-my-posh\bin",
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
   "${env:ProgramFiles}\Go\bin", # IMPORTANT: Golang installation.
+  "${env:ProgramFiles}\Lua", # IMPORTANT: Lua installation. 
   "${env:ProgramFiles}\Java\jdk-17\bin" # IMPORTANT: Must ensure java version is compatible with gradle build tools version.
+  "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
   "${env:ProgramFiles}\CMake\bin",
   "${env:ProgramFiles}\Git\cmd",
@@ -160,8 +163,6 @@ $userPaths = @(
   "${env:ProgramFiles}\dotnet\",
   "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA NvDLISR",
   "${env:ProgramFiles}\gsudo\Current"
-  "${env:ProgramFiles}\Lua", # IMPORTANT: Lua Setup. LUA INSTALLATION REQUIRED.
-  "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
 )
 $currentUserPaths = $env:Path -split ';'
 $updatedUserPaths = ($currentUserPaths + $userPaths) | Select-Object -Unique

@@ -1,8 +1,8 @@
-# NOTE: function reload { . $PROFILE }, FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
+# NOTE: 'function reload { . $PROFILE }' FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
 
 # WARN: EXTRA SETTINGS
 # IMPORTANT: Below is how to configure oh-my-posh theme (MUST HAVE INSTALLED oh-my-posh VIA CHOCOLATEY)
-# TODO: Initialsing prompt theme using 'oh-my-posh'. (Disable / Enable - But comment out Prompt Alias prior to doing so)
+# TODO: Initialsing prompt theme using 'oh-my-posh'. (Disable / Enable - But comment out 'Prompt' alias prior to doing so)
 # oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\gruvbox.omp.json" | Invoke-Expression
 # IMPORTANT: TURNING AUTO-COMPLETE OFF BY DEFAULT:
 Set-PSReadLineOption -PredictionSource None
@@ -13,6 +13,7 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "sudo" =              "gsudo" # NOTE: Elevating permissions using gsudo (sudo) [Requires 'gsudo' package]
   # Regular Function Aliases:
   "edit" =              "Edit-PowerShell-Profile"
+  "open" =              "Open-Current-Directory"
   "aliases" =           "Show-Profile-Aliases"
   "coding" =            "Go-To-Coding-Workspace"
   "csdev" =             "Go-To-C#-Development-Workspace"
@@ -23,34 +24,33 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "cppdev" =            "Go-To-C++-Development-Workspace"
   "tsdev" =             "Go-To-Typescript-Development-Workspace"
   "godev" =             "Go-To-Golang-Development-Workspace"
-  "runjava" =           "Gradle-Run-Java"
-  "buildcpp" =          "Build-CPP-Program"
-  "runcpp" =            "Run-Cpp"
-  "nvim-config" =       "Edit-Nvim-Config"
-  "nvim-config-lazy" =  "Edit-LazyVim-Base-Config" # Not ever necessary really!
   "nvim-path" =         "Go-To-Nvim-Repo-Path"
   "nvim-plugins" =      "Go-To-Nvim-Plugins-Path"
   "profile" =           "Go-To-PowerShell-Profile"
-  "ps-v" =              "Get-PowerShell-Version"
-  "open" =              "Open-Current-Directory"
-  "sshome" =            "Go-To-SSH-Install-Location"
-  "get-username" =      "Get-Current-User-Username"
-  "test-git" =          "Check-GitHub-SSH-Connection"
   "gdg" =               "Go-To-Godot-Games"
   "scripts" =           "Go-To-PowerShell-Scripts"
   "desktop" =           "Go-To-Desktop"
-  "prof-dir" =          "Get-Powershell-Profile-Location"
-  "env-vars" =          "Get-Environment-Variables"
+  "sshome" =            "Go-To-SSH-Install-Location"
   "appdata" =           "Go-To-Appdata"
+  "nvim-config" =       "Edit-Nvim-Config"
+  "nvim-config-lazy" =  "Edit-LazyVim-Base-Config" # Not ever necessary really!
+  "ps-v" =              "Get-PowerShell-Version"
+  "env-vars" =          "Get-Environment-Variables"
+  "prof-dir" =          "Get-Powershell-Profile-Location"
+  "get-username" =      "Get-Current-User-Username"
+  "runjava" =           "Gradle-Run-Java"
+  "buildcpp" =          "Build-CPP-Program"
+  "runcpp" =            "Run-Cpp"
   "start-wsl" =         "Start-WSL-Service"
+  "test-git" =          "Check-GitHub-SSH-Connection"
   # Script Based Function Aliases:
-  "autocomplete" =      "Toggle-AutoComplete"
   "get-prof" =          "Get-Profile"
-  "pskg" =              "PowerShell-Package-Manager"
-  "set-local-cred" =    "Set-GitLocalCredentials"
   "cred" =              "Get-GitLocalCredentials"
-  "touch" =             "Create-File" 
+  "set-local-cred" =    "Set-GitLocalCredentials"
   "scripts-out" =       "Show-PowerShell-Script-Names"
+  "autocomplete" =      "Toggle-AutoComplete"
+  "pskg" =              "PowerShell-Package-Manager"
+  "touch" =             "Create-File" 
   "env-add-path" =      "Add-Path-To-Env-Variables"
   "generate-cert-pfx" = "Create-Certificate"
   "sign-executable" =   "Sign-Exectuable-With-Certificate"
@@ -88,17 +88,17 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Get-PowerShell-Version" =                  { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
   "Get-Environment-Variables" =               { Get-ChildItem env:* | sort-object name}
   "Open-Current-Directory" =                  { Invoke-Item . }
-  "Check-GitHub-SSH-Connection" =             { ssh -T git@github.com }
   "Gradle-Run-Java" =                         { .\gradlew run }
   "Build-CPP-Program" =                       { cmake -S . -B build ; cmake --build build}
   "Run-Cpp" =                                 { ./bin/*.exe }
+  "Check-GitHub-SSH-Connection" =             { ssh -T git@github.com }
   # Script Based Function Aliases:
   "Get-Profile" =                             { & "$ScriptsDir\get-profile.ps1" }
   "Get-GitLocalCredentials" =                 { & "$ScriptsDir\git-get-cred.ps1" }
+  "Set-GitLocalCredentials" =                 { param($localUsername, $localEmail); & "$ScriptsDir\git-set-cred.ps1" -localUsername $localUsername -localEmail $localEmail }
   "Show-PowerShell-Script-Names" =            { & "$ScriptsDir\list-scripts.ps1" -scriptsPath $ScriptsDir }
   "Start-WSL-Service" =                       { & "$ScriptsDir\start-wsl.ps1" }
   "Toggle-AutoComplete" =                     { & "$ScriptsDir\toggle-autocomplete.ps1" }
-  "Set-GitLocalCredentials" =                 { param($localUsername, $localEmail); & "$ScriptsDir\git-set-cred.ps1" -localUsername $localUsername -localEmail $localEmail }
   "Sign-Exectuable-With-Certificate" =        { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
   "PowerShell-Package-Manager" =              { param($command, $packageName); & "$ScriptsDir\package-manager.ps1" -command $command -packageName $packageName }
   "Create-File" =                             { param($path_filename); & "$ScriptsDir\touch-create-file.ps1" -path_filename $path_filename }
@@ -113,28 +113,15 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Share-Profile-With-VSCode-Extension" =     { Get-Content -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "$HOME\Documents\PowerShell\profile.ps1" }
 }
 
-# IMPORTANT: ENVIRONMENT VARIABLES:
-# NOTE: SETTING LOCAL ENVIRONMENT VARIABLES. (WILL DIFFER DEPENDING ON SOFTWARE USED BY YOUR MACHINE)
-# Set INCLUDE path
-$vcIncludePath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.41.34120\include"
-$ucrtIncludePath = "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.22621.0\ucrt"
-$sdkIncludePath = "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.22621.0\shared"
-$env:INCLUDE = "$vcIncludePath;$ucrtIncludePath;$sdkIncludePath"
-# Set LIB path
-$vcLibPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.41.34120\lib\x64"
-$ucrtLibPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Lib\10.0.22621.0\ucrt\x64"
-$sdkLibPath = "${env:ProgramFiles(x86)}\Windows Kits\10\Lib\10.0.22621.0\um\x64"
-$env:LIB = "$vcLibPath;$ucrtLibPath;$sdkLibPath"
-# IMPORTANT: Java Setup: JAVA JDK INSTALLATION REQUIRED.
-$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-17" # NOTE: Standard (required) for Java, the 'JAVA_HOME' locates the JDK tools needed by programs. (SPECIFIC VERSION REQUIRED BY NVIM-JDTLS)
-# IMPORTANT: C++ & C Setup: NINJA BUILD TOOLS INSTALLATION REQUIRED.
-$env:CMAKE_GENERATOR = "Ninja" # NOTE: Specifying the default build system / tools used by CMake to compile and link projects from CMakeLists.txt files.
-$env:CMAKE_EXPORT_COMPILE_COMMANDS = "ON" # IMPORTANT: We need to tell the Ninja generator to create instructions for the clangd lsp, on how projects are structured.
-# User-specific paths
+# WARN: SETTING LOCAL ENVIRONMENT VARIABLES (WILL DIFFER DEPENDING ON SOFTWARE USED BY YOUR MACHINE):
+# IMPORTANT: C++ & C Setup: (NINJA BUILD TOOLS INSTALLATION REQUIRED)
+$env:CMAKE_GENERATOR = "Ninja" # NOTE: Specifying the default build system / generator used by CMake to compile and link projects, from CMakeLists.txt files.
+$env:CMAKE_EXPORT_COMPILE_COMMANDS = "ON" # IMPORTANT: We need to tell the Ninja generator to create instructions for the clangd lsp, detailing how our projects are structured.
+# IMPORTANT: Java Setup: (JAVA JDK INSTALLATION REQUIRED)
+$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-17" # NOTE: Java 17 required to be set as 'JAVA_HOME' for nvim-jdtls to function. The variable points to the JDK itself, providing programs with the java tools they require to function.
+# NOTE: User-specific environment paths.
 $userPaths = @(
   "C:\Windows\System32\OpenSSH\",
-  "C:\mingw64\bin",# NOTE:  Essential for Tree-sitter in Neovim: provides GCC toolchain for compiling language grammars and native modules.
-  "D:\Gradle\gradle-7.3.3\bin", # IMPORTANT: Build tools required for creating java projects.
   "D:\Microsoft VS Code\bin",
   "D:\PuTTY\",
   "$HOME\.cargo\bin",
@@ -142,18 +129,11 @@ $userPaths = @(
   "$HOME\AppData\Local\Android\Sdk\platform-tools",
   "$HOME\AppData\Local\Microsoft\WindowsApps",
   "$HOME\AppData\Roaming\npm",
-  "$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python installation. (Version 3.19 required for nvim-jdtls)
-  "$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python Modules. (eg: pip)
   "${env:ProgramData}\chocolatey\bin",
-  "${env:ProgramData}\chocolatey\lib\ninja\tools" # NOTE: Ninja build tools required by CMake for C++ projects in neovim.
   "${env:ProgramFiles(x86)}\oh-my-posh\bin",
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
-  "${env:ProgramFiles}\Go\bin", # IMPORTANT: Golang installation.
-  "${env:ProgramFiles}\Lua", # IMPORTANT: Lua installation. 
-  "${env:ProgramFiles}\Java\jdk-17\bin" # IMPORTANT: Must ensure java version is compatible with gradle build tools version.
   "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
-  "${env:ProgramFiles}\CMake\bin",
   "${env:ProgramFiles}\Git\cmd",
   "${env:ProgramFiles}\nodejs",
   "${env:ProgramFiles}\Docker\Docker\resources\bin",
@@ -162,12 +142,24 @@ $userPaths = @(
   "${env:ProgramFiles}\dotnet\",
   "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA NvDLISR",
   "${env:ProgramFiles}\gsudo\Current"
+  # WARN: NEOVIM LANGUAGE DEPENDENCIES:
+  "C:\mingw64\bin",# NOTE:  Essential for Tree-sitter in Neovim: provides GCC toolchain for compiling language grammars and native modules.
+  "${env:ProgramFiles}\Lua", # IMPORTANT: Lua Setup.
+  "${env:ProgramFiles}\Go\bin", # IMPORTANT: Golang Setup.
+  "${env:ProgramFiles}\Java\jdk-21\bin" # IMPORTANT: Ensure Java version is compatible with gradle build tools version.
+  "D:\Gradle\gradle-8.5\bin", # IMPORTANT: Build tools required for creating java projects.
+  "${env:ProgramData}\chocolatey\lib\ninja\tools" # NOTE: Ninja build tools required by CMake for C++ projects in neovim.
+  "${env:ProgramFiles}\CMake\bin",
+  "C:\omnisharp\", # NOTE: Dependency required for c# support in neovim.
+  "$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python installation. (Version 3.19 required for nvim-jdtls)
+  "$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python Modules. (eg: pip)
 )
+# IMPORTANT: Setting User-specific environment paths.
 $currentUserPaths = $env:Path -split ';'
 $updatedUserPaths = ($currentUserPaths + $userPaths) | Select-Object -Unique
 $env:Path = $updatedUserPaths -join ';'
 
-# IMPORTANT: Sourcing extended aliases.
+# WARN: Sourcing extended aliases.
 . $PSScriptRoot\temp_aliases.ps1
 # Adding sourced temporary aliases:
 $AliasDefinitions += $ExpandedAliases
@@ -178,24 +170,18 @@ foreach ($alias in $AliasDefinitions.GetEnumerator())
 {
   Set-Alias -Name $alias.Key -Value $alias.Value
 }
-# Initialising all function aliases as global functions. NOTE: Can be called from anywhere.
+# Initialising all function aliases as global functions.  NOTE: Can be called from anywhere.
 foreach ($functionName in $FunctionDefinitions.Keys)
 {
   Set-Item -Path "function:\global:$functionName" -Value $FunctionDefinitions[$functionName]
 }
 # If starting from powershell, we copy over the profile.
-# NOTE:  (Prevents duplicate terminals on startup in VSCODE)
+# NOTE: (Prevents duplicate terminals on startup in VSCODE)
 $currentScriptName = Split-Path -Leaf $PSCommandPath
 if ($currentScriptName.Contains('Microsoft'))
 {
   Share-Profile-With-VSCode-Extension
 }
 
-# IMPORTANT: YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING AUTO-SCRIPTS.
-# NOTE: EXPLICIT AUTO SCRIPT CALLS:
+# NOTE: EXPLICIT AUTO SCRIPT CALLS: (YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING AUTO-SCRIPTS)
 Start-SSHAgent
-# Going straight to the 'Powershell profile' folder on entering terminal.
-if (!$env:VIRTUAL_ENV) # IMPORTANT: Only if we are not currently in a virtual python environment:
-{
-#  profile
-}
