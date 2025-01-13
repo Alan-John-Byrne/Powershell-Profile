@@ -38,6 +38,7 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "env-vars" =          "Get-Environment-Variables"
   "prof-dir" =          "Get-Powershell-Profile-Location"
   "get-username" =      "Get-Current-User-Username"
+  "createjava" =        "Create-Java-Gradle-Project"
   "runjava" =           "Gradle-Run-Java"
   "buildcpp" =          "Build-CPP-Program"
   "runcpp" =            "Run-Cpp"
@@ -88,8 +89,9 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Get-PowerShell-Version" =                  { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
   "Get-Environment-Variables" =               { Get-ChildItem env:* | sort-object name}
   "Open-Current-Directory" =                  { Invoke-Item . }
+  "Create-Java-Gradle-Project" =              { gradle init --type java-application }
   "Gradle-Run-Java" =                         { .\gradlew run }
-  "Build-CPP-Program" =                       { cmake -S . -B build ; cmake --build build}
+  "Build-CPP-Program" =                       { cmake -G "Ninja" -S . -B build ; cmake --build build --verbose} # IMPORTANT: Specifying the generator with the '-G' parameter rather than setting it globally. (Prevents classhes.)
   "Run-Cpp" =                                 { ./bin/*.exe }
   "Check-GitHub-SSH-Connection" =             { ssh -T git@github.com }
   # Script Based Function Aliases:
@@ -115,13 +117,17 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
 
 # WARN: SETTING LOCAL ENVIRONMENT VARIABLES (WILL DIFFER DEPENDING ON SOFTWARE USED BY YOUR MACHINE):
 # IMPORTANT: C++ & C Setup: (NINJA BUILD TOOLS INSTALLATION REQUIRED)
-$env:CMAKE_GENERATOR = "Ninja" # NOTE: Specifying the default build system / generator used by CMake to compile and link projects, from CMakeLists.txt files.
+#$env:CMAKE_GENERATOR = "Ninja" # WARN: Specifying the default build system / generator used by CMake to compile and link projects, from CMakeLists.txt files, globally. (GLOBALLY COULD CAUSE PROBLEMS / CLASHES, INSTEAD USE THE -G ['Generator'] PARAMETER IN THE CMAKE TOOLSET)
 $env:CMAKE_EXPORT_COMPILE_COMMANDS = "ON" # IMPORTANT: We need to tell the Ninja generator to create instructions for the clangd lsp, detailing how our projects are structured.
+$env:CMAKE_BUILD_TYPE = "Debug" # NOTE: We need to generate debug symbols for debugging using nvim-dap. (FINE TO SET GLOBALLY, DEBUGGING IS STANDARD)
 # IMPORTANT: Java Setup: (JAVA JDK INSTALLATION REQUIRED)
-$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-17" # NOTE: Java 17 required to be set as 'JAVA_HOME' for nvim-jdtls to function. The variable points to the JDK itself, providing programs with the java tools they require to function.
+$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-17" # NOTE: Java 17 required to be set as 'JAVA_HOME' for nvim-jdtls to function. The variable points to the JDK itself, providing programs with the java tools they require to function. 
+# IMPORTANT: C# Setup: (DOTNET SDK INSTALLATION REQUIRED - .NET6.0 SDK / RUNTIME REQUIRED FOR OMNISHARP SUPPORT IN NEOVIM - LATEST FOR BUILDING PROJECTS IS .NET8.*.*)
+$env:DOTNET_ROOT = "${env:ProgramFiles}\dotnet\"
 # NOTE: User-specific environment paths.
 $userPaths = @(
   "C:\Windows\System32\OpenSSH\",
+  "C:\tools\neovim\nvim-win64\bin"
   "D:\Microsoft VS Code\bin",
   "D:\PuTTY\",
   "$HOME\.cargo\bin",
@@ -129,18 +135,18 @@ $userPaths = @(
   "$HOME\AppData\Local\Android\Sdk\platform-tools",
   "$HOME\AppData\Local\Microsoft\WindowsApps",
   "$HOME\AppData\Roaming\npm",
-  "${env:ProgramData}\chocolatey\bin",
+  "${env:ProgramData}\chocolatey\bin", # IMPORTANT: Any package installed via the chocolatey package manager, it's binary is automatically accessible via this entry.
   "${env:ProgramFiles(x86)}\oh-my-posh\bin",
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
   "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
+  "${env:ProgramFiles}\LLVM\bin",
   "${env:ProgramFiles}\Git\cmd",
   "${env:ProgramFiles}\nodejs",
   "${env:ProgramFiles}\Docker\Docker\resources\bin",
   "${env:ProgramFiles}\PowerShell\7\",
   "${env:ProgramFiles}\Microsoft SQL Server\150\Tools\Binn\",
-  "${env:ProgramFiles}\dotnet\",
-  "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA NvDLISR",
+  "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA app\NvDLISR",
   "${env:ProgramFiles}\gsudo\Current"
   # WARN: NEOVIM LANGUAGE DEPENDENCIES:
   "C:\mingw64\bin",# NOTE:  Essential for Tree-sitter in Neovim: provides GCC toolchain for compiling language grammars and native modules.
@@ -150,9 +156,13 @@ $userPaths = @(
   "D:\Gradle\gradle-8.5\bin", # IMPORTANT: Build tools required for creating java projects.
   "${env:ProgramData}\chocolatey\lib\ninja\tools" # NOTE: Ninja build tools required by CMake for C++ projects in neovim.
   "${env:ProgramFiles}\CMake\bin",
-  "C:\omnisharp\", # NOTE: Dependency required for c# support in neovim.
-  "$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python installation. (Version 3.19 required for nvim-jdtls)
-  "$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python Modules. (eg: pip)
+  "${env:ProgramFiles}\dotnet",# NOTE: Binary executable dependency required for c# support in neovim.
+  "C:\omnisharp\OmniSharp.exe", # NOTE: Dependency required for c# support in neovim.
+  "$HOME\Local\Programs\Python\Launcher"
+  "$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python installation. (Version 3.9 required for nvim-jdtls)
+  "$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python 3.9 Modules. (eg: pip)
+  "$HOME\AppData\Local\Programs\Python\Python310",# IMPORTANT: Python installation. (Version 3.10 required for LLVM ['lldb needed for c++ debugging'])
+  "$HOME\AppData\Local\Programs\Python\Python310\Scripts" # NOTE: Python 3.10 Modules. (eg: pip)
 )
 # IMPORTANT: Setting User-specific environment paths.
 $currentUserPaths = $env:Path -split ';'
