@@ -44,9 +44,10 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "runcpp" =            "Run-Cpp"
   "start-wsl" =         "Start-WSL-Service"
   "test-git" =          "Check-GitHub-SSH-Connection"
+  "which" =             "Where-is-path"
   # Script Based Function Aliases:
   "get-prof" =          "Get-Profile"
-  "cred" =              "Get-GitLocalCredentials"
+  "get-local-cred" =    "Get-GitLocalCredentials"
   "set-local-cred" =    "Set-GitLocalCredentials"
   "scripts-out" =       "Show-PowerShell-Script-Names"
   "autocomplete" =      "Toggle-AutoComplete"
@@ -90,10 +91,11 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Get-Environment-Variables" =               { Get-ChildItem env:* | sort-object name}
   "Open-Current-Directory" =                  { Invoke-Item . }
   "Create-Java-Gradle-Project" =              { gradle init --type java-application }
-  "Gradle-Run-Java" =                         { .\gradlew run }
+  "Gradle-Run-Java" =                         { .\gradlew run --console=plain} # NOTE: Setting console to plain, so we don't get annoying gradle loading symbols in standard output.
   "Build-CPP-Program" =                       { cmake -G "Ninja" -S . -B build ; cmake --build build --verbose} # IMPORTANT: Specifying the generator with the '-G' parameter rather than setting it globally. (Prevents classhes.)
   "Run-Cpp" =                                 { ./bin/*.exe }
   "Check-GitHub-SSH-Connection" =             { ssh -T git@github.com }
+  "Where-is-path" =                           { param($object) where.exe $object } # NOTE: Undoing PowerShell's 'where' command problem.
   # Script Based Function Aliases:
   "Get-Profile" =                             { & "$ScriptsDir\get-profile.ps1" }
   "Get-GitLocalCredentials" =                 { & "$ScriptsDir\git-get-cred.ps1" }
@@ -103,7 +105,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Toggle-AutoComplete" =                     { & "$ScriptsDir\toggle-autocomplete.ps1" }
   "Sign-Exectuable-With-Certificate" =        { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
   "PowerShell-Package-Manager" =              { param($command, $packageName); & "$ScriptsDir\package-manager.ps1" -command $command -packageName $packageName }
-  "Create-File" =                             { param($path_filename); & "$ScriptsDir\touch-create-file.ps1" -path_filename $path_filename }
+  "Create-File" =                             { param($path_filename); & "$ScriptsDir\touch-create-file. ps1" -path_filename $path_filename }
   "Add-Path-To-Env-Variables" =               { param($NewPath); & "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath}
   "Create-Certificate" =                      { param($SubjectName, $Pass, $PfxFilePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -Password $Password -PfxFilePath $PfxFilePath }
 
@@ -115,54 +117,65 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Share-Profile-With-VSCode-Extension" =     { Get-Content -Path "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" | Set-Content -Path "$HOME\Documents\PowerShell\profile.ps1" }
 }
 
-# WARN: SETTING LOCAL ENVIRONMENT VARIABLES (WILL DIFFER DEPENDING ON SOFTWARE USED BY YOUR MACHINE):
+# WARN: SPECIFIC LOCAL ENVIRONMENT VARIABLES (*will differ depending on the software used on your machine*):
 # IMPORTANT: C++ & C Setup: (NINJA BUILD TOOLS INSTALLATION REQUIRED)
 #$env:CMAKE_GENERATOR = "Ninja" # WARN: Specifying the default build system / generator used by CMake to compile and link projects, from CMakeLists.txt files, globally. (GLOBALLY COULD CAUSE PROBLEMS / CLASHES, INSTEAD USE THE -G ['Generator'] PARAMETER IN THE CMAKE TOOLSET)
-$env:CMAKE_EXPORT_COMPILE_COMMANDS = "ON" # IMPORTANT: We need to tell the Ninja generator to create instructions for the clangd lsp, detailing how our projects are structured.
-$env:CMAKE_BUILD_TYPE = "Debug" # NOTE: We need to generate debug symbols for debugging using nvim-dap. (FINE TO SET GLOBALLY, DEBUGGING IS STANDARD)
+$env:CMAKE_EXPORT_COMPILE_COMMANDS = "ON" # IMPORTANT: We need to tell the Ninja generator to create instructions for the 'clangd' LSP. It details how C++ projects are structured.
+$env:CMAKE_BUILD_TYPE = "Debug" # NOTE: We need to generate debug symbols for debugging using nvim-dap. (*FINE TO SET GLOBALLY AS DEBUGGING IS STANDARD*)
 # IMPORTANT: Java Setup: (JAVA JDK INSTALLATION REQUIRED)
-$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-17" # NOTE: Java 17 required to be set as 'JAVA_HOME' for nvim-jdtls to function. The variable points to the JDK itself, providing programs with the java tools they require to function. 
+$env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" # NOTE: Java 21 *REQUIRED* as 'JAVA_HOME' for nvim-jdtls to function. Variable points to the JDK itself, providing programs the java tools required to function.
 # IMPORTANT: C# Setup: (DOTNET SDK INSTALLATION REQUIRED - .NET6.0 SDK / RUNTIME REQUIRED FOR OMNISHARP SUPPORT IN NEOVIM - LATEST FOR BUILDING PROJECTS IS .NET8.*.*)
 $env:DOTNET_ROOT = "${env:ProgramFiles}\dotnet\"
-# NOTE: User-specific environment paths.
+# NOTE: User-specific / generic environment paths.
+# REMEMBER: PowerShell inherits the global environment variables.
+# *BUT*, if you’ve customized your $PROFILE, it will override / modify
+# the global PATH for PowerShell sessions. 
 $userPaths = @(
-  "C:\Windows\System32\OpenSSH\",
-  "C:\tools\neovim\nvim-win64\bin"
+  "C:\Windows\System32",
+  "C:\Windows\System32\OpenSSH",
   "D:\Microsoft VS Code\bin",
   "D:\PuTTY\",
-  "$HOME\.cargo\bin",
-  "$HOME\.dotnet\tools",
   "$HOME\AppData\Local\Android\Sdk\platform-tools",
   "$HOME\AppData\Local\Microsoft\WindowsApps",
-  "$HOME\AppData\Roaming\npm",
-  "${env:ProgramData}\chocolatey\bin", # IMPORTANT: Any package installed via the chocolatey package manager, it's binary is automatically accessible via this entry.
-  "${env:ProgramFiles(x86)}\oh-my-posh\bin",
+  "${env:ProgramData}\chocolatey\bin", # NOTE: *Almost* any package installed via the chocolatey package manager, it's binary is automatically accessible via this entry.
   "${env:ProgramFiles(x86)}\NVIDIA Corporation\PhysX\Common",
-  "${env:ProgramFiles}\Apache\Maven\bin" # Build automation tool for Java projects (Binaries must be downloaded and added to specified directory).
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
-  "${env:ProgramFiles}\LLVM\bin",
   "${env:ProgramFiles}\Git\cmd",
-  "${env:ProgramFiles}\nodejs",
   "${env:ProgramFiles}\Docker\Docker\resources\bin",
-  "${env:ProgramFiles}\PowerShell\7\",
-  "${env:ProgramFiles}\Microsoft SQL Server\150\Tools\Binn\",
+  "${env:ProgramFiles}\PowerShell\7",
+  "${env:ProgramFiles}\Microsoft SQL Server\150\Tools\Binn",
   "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA app\NvDLISR",
   "${env:ProgramFiles}\gsudo\Current"
-  # WARN: NEOVIM LANGUAGE DEPENDENCIES:
-  "C:\mingw64\bin",# NOTE:  Essential for Tree-sitter in Neovim: provides GCC toolchain for compiling language grammars and native modules.
-  "${env:ProgramFiles}\Lua", # IMPORTANT: Lua Setup.
-  "${env:ProgramFiles}\Go\bin", # IMPORTANT: Golang Setup.
-  "${env:ProgramFiles}\Java\jdk-21\bin" # IMPORTANT: Ensure Java version is compatible with gradle build tools version.
-  "D:\Gradle\gradle-8.5\bin", # IMPORTANT: Build tools required for creating java projects.
-  "${env:ProgramData}\chocolatey\lib\ninja\tools" # NOTE: Ninja build tools required by CMake for C++ projects in neovim.
-  "${env:ProgramFiles}\CMake\bin",
-  "${env:ProgramFiles}\dotnet",# NOTE: Binary executable dependency required for c# support in neovim.
-  "C:\omnisharp\OmniSharp.exe", # NOTE: Dependency required for c# support in neovim.
-  "$HOME\Local\Programs\Python\Launcher"
-  "$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python installation. (Version 3.9 required for nvim-jdtls)
-  "$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python 3.9 Modules. (eg: pip)
-  "$HOME\AppData\Local\Programs\Python\Python310",# IMPORTANT: Python installation. (Version 3.10 required for LLVM ['lldb needed for c++ debugging'])
-  "$HOME\AppData\Local\Programs\Python\Python310\Scripts" # NOTE: Python 3.10 Modules. (eg: pip)
+  # TODO: NEOVIM DEPENDENCIES:
+  "C:\tools\neovim\nvim-win64\bin" # NOTE: Making 'nvim.exe' accessible.
+  "${env:ProgramFiles(x86)}\oh-my-posh\bin", # REMEMBER: Makes shit look nice.
+  # XXX: Executables Required for language support:
+  "${env:ProgramFiles}\nodejs",# WARN: Binary executable required for JavaScript support
+  "$HOME\AppData\Roaming\npm", # WARN: Node.js package manager required for building *some* plugins.
+  "${env:ProgramFiles}\dotnet",# WARN: Binary executable required for C# support
+  "C:\omnisharp\OmniSharp.exe", # WARN: Another binary executable required for c# support
+  "${env:ProgramFiles}\LLVM\bin", # WARN: C++ Debugger Setup. (lldb.exe) / lldb command.
+  "${env:ProgramFiles}\CMake\bin", # WARN: Build System Generator required for creating C++ projects.
+  "${env:ProgramData}\chocolatey\lib\ninja\tools" # WARN: Ninja build tools required by CMake for C++ projects. (For when using the 'clangd' LSP)
+  "${env:ProgramFiles}\Lua", # WARN: Lua Setup. (lua.exe) / lua command.
+  "${env:ProgramFiles}\Go\bin", # WARN: Golang Setup. (go.exe) / go command.
+  "${env:ProgramFiles}\Java\jdk-21\bin" # WARN: Java JDK (*Gradle Build Tools Compatibility Required*)
+  "D:\Gradle\gradle-8.5\bin", # WARN: Gradle Build Tools required for creating java projects. (*Java JDK Compatibility Required*)
+  # XXX: Python dependencies for *some* of the above executables:
+  #"$HOME\Local\Programs\Python\Launcher" # WARN: Python setup. ('py.exe') / py command.
+  #"$HOME\AppData\Local\Programs\Python\Python310",# IMPORTANT: Python Version 3.10 *REQUIRED* for LLVM ('lldb needed for C++ project debugging using nvim-dap').
+  #"$HOME\AppData\Local\Programs\Python\Python310\Scripts" # NOTE: Python 3.10 Modules. (eg: pip)
+  #"$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python Version 3.9 *REQUIRED* for nvim-jdtls.
+  #"$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python 3.9 Modules. (eg: pip)
+  # XXX: None-ls linting executables:
+  "C:\Users\alanj\.cargo\bin\selene.exe" # WARN: Lua linter executable *Required* by 'none-ls' plugin.
+  # XXX : 'treesitter.nvim' requirements in Neovim:
+  "C:\mingw64\bin" # WARN: Providing the GCC toolchain for compiling language grammars and native modules.
+  # XXX: Requirements yet to be determined:
+  "${env:ProgramFiles}\Apache\Maven\bin"
+  "$HOME\.cargo\bin",
+  "$HOME\.dotnet\tools",
+  "$HOME\AppData\Roaming\luarocks"
 )
 # IMPORTANT: Setting User-specific environment paths.
 $currentUserPaths = $env:Path -split ';'
@@ -178,8 +191,7 @@ $FunctionDefinitions += $ExpandedFunctionDefinitions
 # Specifying and setting the corresponding aliases to the global functions set.
 foreach ($alias in $AliasDefinitions.GetEnumerator())
 {
-  Set-Alias -Name $alias.Key -Value $alias.Value
-}
+  Set-Alias -Name $alias.Key -Value $alias.Value }
 # Initialising all function aliases as global functions.  NOTE: Can be called from anywhere.
 foreach ($functionName in $FunctionDefinitions.Keys)
 {

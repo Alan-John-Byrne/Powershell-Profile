@@ -1,4 +1,6 @@
-# WARN: This script was an attempt to create a Lua project manager, but was redundant and included misenterpretations on how LuaRocks environments should be managed. It doesn't properly handle environment activation and may conflict with existing LuaRocks configurations. Use with caution and consider using official LuaRocks commands instead.
+# WARN: This script was an attempt to create a Lua project manager, but was redundant and included misenterpretations on how
+# LuaRocks environments should be managed. It doesn't properly handle environment activation and may conflict with existing LuaRocks
+# configurations. Use with caution and consider using official LuaRocks commands instead.
 param (
     [Parameter(Mandatory=$false)]
     [string]$Command
