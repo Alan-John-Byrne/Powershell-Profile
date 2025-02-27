@@ -135,6 +135,7 @@ $userPaths = @(
   "C:\Windows\System32\OpenSSH",
   "D:\Microsoft VS Code\bin",
   "D:\PuTTY\",
+  "C:\Users\alanj\AppData\Roaming\npm\node_modules", # NOTE: Required for accessing global node modules.
   "$HOME\AppData\Local\Android\Sdk\platform-tools",
   "$HOME\AppData\Local\Microsoft\WindowsApps",
   "${env:ProgramData}\chocolatey\bin", # NOTE: *Almost* any package installed via the chocolatey package manager, it's binary is automatically accessible via this entry.
@@ -147,7 +148,8 @@ $userPaths = @(
   "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA app\NvDLISR",
   "${env:ProgramFiles}\gsudo\Current"
   # TODO: NEOVIM DEPENDENCIES:
-  "C:\tools\neovim\nvim-win64\bin" # NOTE: Making 'nvim.exe' accessible.
+  "C:\tools\neovim\nvim-win64\bin", # NOTE: Making 'nvim.exe' accessible.
+  "C:\Users\alanj\AppData\Local\nvim-data\mason\bin", # IMPORTANT: *Required* for Mason Plugin Manager plugins to be 'findable' by other setup plugins via $PATH.
   "${env:ProgramFiles(x86)}\oh-my-posh\bin", # REMEMBER: Makes shit look nice.
   # XXX: Executables Required for language support:
   "${env:ProgramFiles}\nodejs",# WARN: Binary executable required for JavaScript support
@@ -162,11 +164,11 @@ $userPaths = @(
   "${env:ProgramFiles}\Java\jdk-21\bin" # WARN: Java JDK (*Gradle Build Tools Compatibility Required*)
   "D:\Gradle\gradle-8.5\bin", # WARN: Gradle Build Tools required for creating java projects. (*Java JDK Compatibility Required*)
   # XXX: Python dependencies for *some* of the above executables:
-  #"$HOME\Local\Programs\Python\Launcher" # WARN: Python setup. ('py.exe') / py command.
-  #"$HOME\AppData\Local\Programs\Python\Python310",# IMPORTANT: Python Version 3.10 *REQUIRED* for LLVM ('lldb needed for C++ project debugging using nvim-dap').
-  #"$HOME\AppData\Local\Programs\Python\Python310\Scripts" # NOTE: Python 3.10 Modules. (eg: pip)
-  #"$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python Version 3.9 *REQUIRED* for nvim-jdtls.
-  #"$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python 3.9 Modules. (eg: pip)
+  "$HOME\Local\Programs\Python\Launcher" # WARN: Python setup. ('py.exe') / py command.
+  "$HOME\AppData\Local\Programs\Python\Python310",# IMPORTANT: Python Version 3.10 *REQUIRED* for LLVM ('lldb needed for C++ project debugging using nvim-dap').
+  "$HOME\AppData\Local\Programs\Python\Python310\Scripts" # NOTE: Python 3.10 Modules. (eg: pip)
+  "$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python Version 3.9 *REQUIRED* for nvim-jdtls.
+  "$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python 3.9 Modules. (eg: pip)
   # XXX: None-ls linting executables:
   "C:\Users\alanj\.cargo\bin\selene.exe" # WARN: Lua linter executable *Required* by 'none-ls' plugin.
   # XXX : 'treesitter.nvim' requirements in Neovim:
@@ -191,7 +193,8 @@ $FunctionDefinitions += $ExpandedFunctionDefinitions
 # Specifying and setting the corresponding aliases to the global functions set.
 foreach ($alias in $AliasDefinitions.GetEnumerator())
 {
-  Set-Alias -Name $alias.Key -Value $alias.Value }
+  Set-Alias -Name $alias.Key -Value $alias.Value 
+}
 # Initialising all function aliases as global functions.  NOTE: Can be called from anywhere.
 foreach ($functionName in $FunctionDefinitions.Keys)
 {
