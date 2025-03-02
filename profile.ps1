@@ -105,7 +105,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Toggle-AutoComplete" =                     { & "$ScriptsDir\toggle-autocomplete.ps1" }
   "Sign-Exectuable-With-Certificate" =        { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
   "PowerShell-Package-Manager" =              { param($command, $packageName); & "$ScriptsDir\package-manager.ps1" -command $command -packageName $packageName }
-  "Create-File" =                             { param($path_filename); & "$ScriptsDir\touch-create-file. ps1" -path_filename $path_filename }
+  "Create-File" =                             { param($path_filename); & "$ScriptsDir\touch-create-file.ps1" -path_filename $path_filename }
   "Add-Path-To-Env-Variables" =               { param($NewPath); & "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath}
   "Create-Certificate" =                      { param($SubjectName, $Pass, $PfxFilePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -Password $Password -PfxFilePath $PfxFilePath }
 
@@ -135,6 +135,7 @@ $userPaths = @(
   "C:\Windows\System32\OpenSSH",
   "D:\Microsoft VS Code\bin",
   "D:\PuTTY\",
+  "C:\Program Files\WezTerm",
   "C:\Users\alanj\AppData\Roaming\npm\node_modules", # NOTE: Required for accessing global node modules.
   "$HOME\AppData\Local\Android\Sdk\platform-tools",
   "$HOME\AppData\Local\Microsoft\WindowsApps",
