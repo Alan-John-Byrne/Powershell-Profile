@@ -8,5 +8,5 @@ Modules
 PowershellEditorServices.json
 (?)*
 %*
-*.lock
+*lock*
 *test*

@@ -33,7 +33,6 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "sshome" =            "Go-To-SSH-Install-Location"
   "appdata" =           "Go-To-Appdata"
   "nvim-config" =       "Edit-Nvim-Config"
-  "nvim-config-lazy" =  "Edit-LazyVim-Base-Config" # Not ever necessary really!
   "ps-v" =              "Get-PowerShell-Version"
   "env-vars" =          "Get-Environment-Variables"
   "prof-dir" =          "Get-Powershell-Profile-Location"
@@ -66,15 +65,15 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   # Regular Function Aliases:
   "Edit-PowerShell-Profile" =                 { profile; nvim $(get-prof) }
   "Show-Profile-Aliases" =                    { Write-Host "`nPowershell Profile Aliases:`n$($AliasDefinitions.GetEnumerator() | Format-Table -Property Name, Value -AutoSize | Out-String)" }
-  "Go-To-Coding-Workspace" =                  { Set-Location "$HOME\Documents\PowerShell\coding" }
-  "Go-To-C#-Development-Workspace" =          { Set-Location "$HOME\Documents\PowerShell\coding\csdev" }
-  "Go-To-Python-Development-Workspace" =      { Set-Location "$HOME\Documents\PowerShell\coding\pydev" }
-  "Go-To-Lua-Development-Workspace" =         { Set-Location "$HOME\Documents\PowerShell\coding\ldev" }
-  "Go-To-JavaScript-Development-Workspace" =  { Set-Location "$HOME\Documents\PowerShell\coding\jsdev" }
-  "Go-To-Java-Development-Workspace" =        { Set-Location "$HOME\Documents\PowerShell\coding\javadev" }
-  "Go-To-C++-Development-Workspace" =         { Set-Location "$HOME\Documents\PowerShell\coding\cppdev" }
-  "Go-To-Typescript-Development-Workspace" =  { Set-Location "$HOME\Documents\PowerShell\coding\tsdev" }
-  "Go-To-Golang-Development-Workspace" =      { Set-Location "$HOME\Documents\PowerShell\coding\godev" }
+  "Go-To-Coding-Workspace" =                  { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding" }
+  "Go-To-C#-Development-Workspace" =          { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\csdev" }
+  "Go-To-Python-Development-Workspace" =      { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\pydev" }
+  "Go-To-Lua-Development-Workspace" =         { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\ldev" }
+  "Go-To-JavaScript-Development-Workspace" =  { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\jsdev" }
+  "Go-To-Java-Development-Workspace" =        { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\javadev" }
+  "Go-To-C++-Development-Workspace" =         { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\cppdev" }
+  "Go-To-Typescript-Development-Workspace" =  { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\tsdev" }
+  "Go-To-Golang-Development-Workspace" =      { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\godev" }
   "Go-To-PowerShell-Profile" =                { Set-Location "$HOME\Documents\Powershell" }
   "Go-To-Godot-Games" =                       { Set-Location "$HOME\Desktop\Games\Godot Games" }
   "Go-To-PowerShell-Scripts" =                { Set-Location "$HOME\Documents\PowerShell\scripts" }
@@ -84,7 +83,6 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Go-To-Appdata" =                           { Set-Location "$HOME\AppData\"}
   "Go-To-SSH-Install-Location" =              { Set-Location "$HOME\.ssh" }
   "Edit-Nvim-Config" =                        { Set-Location "$HOME\AppData\Local\nvim" ; nvim 'init.lua' ; profile }
-  "Edit-LazyVim-Base-Config" =                { Set-Location "$HOME\AppData\Local\nvim-data\lazy\LazyVim\lua\lazyvim"; nvim 'init.lua'; profile}
   "Get-Powershell-Profile-Location" =         { return "$HOME\Documents\Powershell" }
   "Get-Current-User-Username" =               { return (whoami | ForEach-Object { $_.Split('\') })[-1] }
   "Get-PowerShell-Version" =                  { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
@@ -160,25 +158,22 @@ $userPaths = @(
   "${env:ProgramFiles}\LLVM\bin", # WARN: C++ Debugger Setup. (lldb.exe) / lldb command.
   "${env:ProgramFiles}\CMake\bin", # WARN: Build System Generator required for creating C++ projects.
   "${env:ProgramData}\chocolatey\lib\ninja\tools" # WARN: Ninja build tools required by CMake for C++ projects. (For when using the 'clangd' LSP)
-  "${env:ProgramFiles}\Lua", # WARN: Lua Setup. (lua.exe) / lua command.
-  "${env:ProgramFiles}\Go\bin", # WARN: Golang Setup. (go.exe) / go command.
+  "${env:ProgramFiles}\Lua\5.1", # NOTE: Lua Setup Verson 5.1 (lua.exe) / lua command. Required for many of neovim's plugins (e.g.:'image.nvim') build processes. (MOST COMPATIBLE WITH NEOVIM) 
+  "${env:ProgramFiles}\Go\bin", # WARN: Golang & Go 'Delve' Debug Adapter Setup. (go.exe + dlv.exe) / go command.
   "${env:ProgramFiles}\Java\jdk-21\bin" # WARN: Java JDK (*Gradle Build Tools Compatibility Required*)
   "D:\Gradle\gradle-8.5\bin", # WARN: Gradle Build Tools required for creating java projects. (*Java JDK Compatibility Required*)
   # XXX: Python dependencies for *some* of the above executables:
   "$HOME\Local\Programs\Python\Launcher" # WARN: Python setup. ('py.exe') / py command.
   "$HOME\AppData\Local\Programs\Python\Python310",# IMPORTANT: Python Version 3.10 *REQUIRED* for LLVM ('lldb needed for C++ project debugging using nvim-dap').
-  "$HOME\AppData\Local\Programs\Python\Python310\Scripts" # NOTE: Python 3.10 Modules. (eg: pip)
+  "$HOME\AppData\Local\Programs\Python\Python310\Scripts", # NOTE: Python 3.10 Modules. (eg: pip)
   "$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python Version 3.9 *REQUIRED* for nvim-jdtls.
   "$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python 3.9 Modules. (eg: pip)
-  # XXX: None-ls linting executables:
-  "C:\Users\alanj\.cargo\bin\selene.exe" # WARN: Lua linter executable *Required* by 'none-ls' plugin.
   # XXX : 'treesitter.nvim' requirements in Neovim:
-  "C:\mingw64\bin" # WARN: Providing the GCC toolchain for compiling language grammars and native modules.
+  "C:\mingw64\bin", # WARN: Providing the GCC toolchain for compiling language grammars and native modules.
   # XXX: Requirements yet to be determined:
-  "${env:ProgramFiles}\Apache\Maven\bin"
+  "${env:ProgramFiles}\Apache\Maven\bin",
   "$HOME\.cargo\bin",
-  "$HOME\.dotnet\tools",
-  "$HOME\AppData\Roaming\luarocks"
+  "$HOME\.dotnet\tools"
 )
 # IMPORTANT: Setting User-specific environment paths.
 $currentUserPaths = $env:Path -split ';'
