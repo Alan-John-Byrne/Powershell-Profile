@@ -124,6 +124,8 @@ $env:CMAKE_BUILD_TYPE = "Debug" # NOTE: We need to generate debug symbols for de
 $env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" # NOTE: Java 21 *REQUIRED* as 'JAVA_HOME' for nvim-jdtls to function. Variable points to the JDK itself, providing programs the java tools required to function.
 # IMPORTANT: C# Setup: (DOTNET SDK INSTALLATION REQUIRED - .NET6.0 SDK / RUNTIME REQUIRED FOR OMNISHARP SUPPORT IN NEOVIM - LATEST FOR BUILDING PROJECTS IS .NET8.*.*)
 $env:DOTNET_ROOT = "${env:ProgramFiles}\dotnet\"
+# IMPORTANT: WEZTERM CONFIGURATION: (Putting it in my NeoVim Configuration Directory)
+# $env:WEZTERM_CONFIG_FILE = "$HOME\AppData\Local\nvim\.wezterm.lua" CANNOT BE DONE WITHIN PROFILE, MUST BE GLOBAL VIA SYSTEM GUI.
 # NOTE: User-specific / generic environment paths.
 # REMEMBER: PowerShell inherits the global environment variables.
 # *BUT*, if you’ve customized your $PROFILE, it will override / modify
@@ -163,7 +165,7 @@ $userPaths = @(
   "${env:ProgramFiles}\Java\jdk-21\bin" # WARN: Java JDK (*Gradle Build Tools Compatibility Required*)
   "D:\Gradle\gradle-8.5\bin", # WARN: Gradle Build Tools required for creating java projects. (*Java JDK Compatibility Required*)
   # XXX: Python dependencies for *some* of the above executables:
-  "$HOME\Local\Programs\Python\Launcher" # WARN: Python setup. ('py.exe') / py command.
+  "$HOME\AppData\Local\Programs\Python\Launcher" # WARN: Python setup. ('py.exe') / py command.
   "$HOME\AppData\Local\Programs\Python\Python310",# IMPORTANT: Python Version 3.10 *REQUIRED* for LLVM ('lldb needed for C++ project debugging using nvim-dap').
   "$HOME\AppData\Local\Programs\Python\Python310\Scripts", # NOTE: Python 3.10 Modules. (eg: pip)
   "$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python Version 3.9 *REQUIRED* for nvim-jdtls.
