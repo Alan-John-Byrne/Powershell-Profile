@@ -120,7 +120,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
 #$env:CMAKE_GENERATOR = "Ninja" # WARN: Specifying the default build system / generator used by CMake to compile and link projects, from CMakeLists.txt files, globally. (GLOBALLY COULD CAUSE PROBLEMS / CLASHES, INSTEAD USE THE -G ['Generator'] PARAMETER IN THE CMAKE TOOLSET)
 $env:CMAKE_EXPORT_COMPILE_COMMANDS = "ON" # IMPORTANT: We need to tell the Ninja generator to create instructions for the 'clangd' LSP. It details how C++ projects are structured.
 $env:CMAKE_BUILD_TYPE = "Debug" # NOTE: We need to generate debug symbols for debugging using nvim-dap. (*FINE TO SET GLOBALLY AS DEBUGGING IS STANDARD*)
-# IMPORTANT: Java Setup: (JAVA JDK INSTALLATION REQUIRED)
+# IMPORTANT: Java Setup: (JAVA JDK INSTALLATION REQUIRED + Gradle Build Tools Compatibility Required) 
 $env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" # NOTE: Java 21 *REQUIRED* as 'JAVA_HOME' for nvim-jdtls to function. Variable points to the JDK itself, providing programs the java tools required to function.
 # IMPORTANT: C# Setup: (DOTNET SDK INSTALLATION REQUIRED - .NET6.0 SDK / RUNTIME REQUIRED FOR OMNISHARP SUPPORT IN NEOVIM - LATEST FOR BUILDING PROJECTS IS .NET8.*.*)
 $env:DOTNET_ROOT = "${env:ProgramFiles}\dotnet\"
@@ -144,7 +144,6 @@ $userPaths = @(
   "${env:ProgramFiles}\WindowsPowerShell\Modules\Pester\5.5.0\bin",
   "${env:ProgramFiles}\Git\cmd",
   "${env:ProgramFiles}\Docker\Docker\resources\bin",
-  "${env:ProgramFiles}\PowerShell\7",
   "${env:ProgramFiles}\Microsoft SQL Server\150\Tools\Binn",
   "${env:ProgramFiles}\NVIDIA Corporation\NVIDIA app\NvDLISR",
   "${env:ProgramFiles}\gsudo\Current"
@@ -162,20 +161,17 @@ $userPaths = @(
   "${env:ProgramData}\chocolatey\lib\ninja\tools" # WARN: Ninja build tools required by CMake for C++ projects. (For when using the 'clangd' LSP)
   "${env:ProgramFiles}\Lua\5.1", # NOTE: Lua Setup Verson 5.1 (lua.exe) / lua command. Required for many of neovim's plugins (e.g.:'image.nvim') build processes. (MOST COMPATIBLE WITH NEOVIM) 
   "${env:ProgramFiles}\Go\bin", # WARN: Golang & Go 'Delve' Debug Adapter Setup. (go.exe + dlv.exe) / go command.
-  "${env:ProgramFiles}\Java\jdk-21\bin" # WARN: Java JDK (*Gradle Build Tools Compatibility Required*)
   "D:\Gradle\gradle-8.5\bin", # WARN: Gradle Build Tools required for creating java projects. (*Java JDK Compatibility Required*)
   # XXX: Python dependencies for *some* of the above executables:
-  "$HOME\AppData\Local\Programs\Python\Launcher" # WARN: Python setup. ('py.exe') / py command.
-  "$HOME\AppData\Local\Programs\Python\Python310",# IMPORTANT: Python Version 3.10 *REQUIRED* for LLVM ('lldb needed for C++ project debugging using nvim-dap').
+  "$HOME\AppData\Local\Programs\Python\Launcher" # WARN: Python setup. ('py.exe' & 'pyw.exe') / py & pyw command. (Uses the latest version of python installed on your system.)
+  "$HOME\AppData\Local\Programs\Python\Python313\Scripts", # NOTE: My Latest version of Pythons (3.13) Modules. (eg: pip)
+  "$HOME\AppData\Local\Programs\Python\Python310",# IMPORTANT: Python Version 3.10 *REQUIRED* for LLVM. (lldb needs the 'python310.dll' for C++ project debugging using nvim-dap)
   "$HOME\AppData\Local\Programs\Python\Python310\Scripts", # NOTE: Python 3.10 Modules. (eg: pip)
   "$HOME\AppData\Local\Programs\Python\Python39\",# IMPORTANT: Python Version 3.9 *REQUIRED* for nvim-jdtls.
   "$HOME\AppData\Local\Programs\Python\Python39\Scripts", # NOTE: Python 3.9 Modules. (eg: pip)
   # XXX : 'treesitter.nvim' requirements in Neovim:
   "C:\mingw64\bin", # WARN: Providing the GCC toolchain for compiling language grammars and native modules.
-  # XXX: Requirements yet to be determined:
-  "${env:ProgramFiles}\Apache\Maven\bin",
-  "$HOME\.cargo\bin",
-  "$HOME\.dotnet\tools"
+  "$HOME\.cargo\bin"# WARN: Providing the Rust toolchain for compiling language grammars and native modules.
 )
 # IMPORTANT: Setting User-specific environment paths.
 $currentUserPaths = $env:Path -split ';'
