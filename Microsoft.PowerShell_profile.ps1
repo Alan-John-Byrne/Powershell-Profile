@@ -16,6 +16,7 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "open" =              "Open-Current-Directory"
   "aliases" =           "Show-Profile-Aliases"
   "coding" =            "Go-To-Coding-Workspace"
+  "projects" =          "Go-To-Projects"
   "csdev" =             "Go-To-C#-Development-Workspace"
   "pydev" =             "Go-To-Python-Development-Workspace"
   "ldev" =              "Go-To-Lua-Development-Workspace"
@@ -66,6 +67,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Edit-PowerShell-Profile" =                 { profile; nvim $(get-prof) }
   "Show-Profile-Aliases" =                    { Write-Host "`nPowershell Profile Aliases:`n$($AliasDefinitions.GetEnumerator() | Format-Table -Property Name, Value -AutoSize | Out-String)" }
   "Go-To-Coding-Workspace" =                  { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding" }
+  "Go-To-Projects" =                          { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\projects"}
   "Go-To-C#-Development-Workspace" =          { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\csdev" }
   "Go-To-Python-Development-Workspace" =      { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\pydev" }
   "Go-To-Lua-Development-Workspace" =         { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\ldev" }
@@ -125,7 +127,7 @@ $env:JAVA_HOME = "${env:ProgramFiles}\Java\jdk-21" # NOTE: Java 21 *REQUIRED* as
 # IMPORTANT: C# Setup: (DOTNET SDK INSTALLATION REQUIRED - .NET6.0 SDK / RUNTIME REQUIRED FOR OMNISHARP SUPPORT IN NEOVIM - LATEST FOR BUILDING PROJECTS IS .NET8.*.*)
 $env:DOTNET_ROOT = "${env:ProgramFiles}\dotnet\"
 # IMPORTANT: WEZTERM CONFIGURATION: (Putting it in my NeoVim Configuration Directory)
-# $env:WEZTERM_CONFIG_FILE = "$HOME\AppData\Local\nvim\.wezterm.lua" CANNOT BE DONE WITHIN PROFILE, MUST BE GLOBAL VIA SYSTEM GUI.
+# $env:WEZTERM_CONFIG_FILE = "$HOME\AppData\Local\nvim\lua\config\.wezterm.lua" CANNOT BE DONE WITHIN PROFILE, MUST BE GLOBAL VIA SYSTEM GUI.
 # NOTE: User-specific / generic environment paths.
 # REMEMBER: PowerShell inherits the global environment variables.
 # *BUT*, if you’ve customized your $PROFILE, it will override / modify
