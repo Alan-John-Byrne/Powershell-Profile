@@ -67,7 +67,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Edit-PowerShell-Profile" =                 { profile; nvim $(get-prof) }
   "Show-Profile-Aliases" =                    { Write-Host "`nPowershell Profile Aliases:`n$($AliasDefinitions.GetEnumerator() | Format-Table -Property Name, Value -AutoSize | Out-String)" }
   "Go-To-Coding-Workspace" =                  { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding" }
-  "Go-To-Projects" =                          { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\projects"}
+  "Go-To-Projects" =                          { Set-Location "D:\9-Projects"}
   "Go-To-C#-Development-Workspace" =          { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\csdev" }
   "Go-To-Python-Development-Workspace" =      { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\pydev" }
   "Go-To-Lua-Development-Workspace" =         { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\ldev" }
@@ -163,6 +163,7 @@ $userPaths = @(
   "${env:ProgramData}\chocolatey\lib\ninja\tools" # WARN: Ninja build tools required by CMake for C++ projects. (For when using the 'clangd' LSP)
   "${env:ProgramFiles}\Lua\5.1", # NOTE: Lua Setup Verson 5.1 (lua.exe) / lua command. Required for many of neovim's plugins (e.g.:'image.nvim') build processes. (MOST COMPATIBLE WITH NEOVIM) 
   "${env:ProgramFiles}\Go\bin", # WARN: Golang & Go 'Delve' Debug Adapter Setup. (go.exe + dlv.exe) / go command.
+  "${env:JAVA_HOME}\bin", # WARN: Java JDK (*Gradle Build Tools Compatibility Required*)
   "D:\Gradle\gradle-8.5\bin", # WARN: Gradle Build Tools required for creating java projects. (*Java JDK Compatibility Required*)
   # XXX: Python dependencies for *some* of the above executables:
   "$HOME\AppData\Local\Programs\Python\Launcher" # WARN: Python setup. ('py.exe' & 'pyw.exe') / py & pyw command. (Uses the latest version of python installed on your system.)
