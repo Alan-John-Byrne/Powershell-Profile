@@ -29,7 +29,7 @@ if ($service.Status -ne 'Running')
 $env:SSH_AUTH_SOCK = "\\.\pipe\openssh-ssh-agent"
 # Check if the key is already added to the agent. 
 $keys = ssh-add -L 2>&1 | Out-Null # Muting immediate pointless errors for brevity.
-if ($keys -notmatch "The agent has no identities.")
+if ($keys -notmatch "The agent has no identities." -or [string]::IsNullOrEmpty($keys))
 {
   # Do Nothing.
   return
