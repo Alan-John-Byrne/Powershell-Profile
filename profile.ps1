@@ -1,3 +1,6 @@
+if ($null -ne $profileLoaded) { return }
+$profileLoaded = $true
+
 # NOTE: 'function reload { . $PROFILE }' FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
 
 # WARN: EXTRA SETTINGS
@@ -93,7 +96,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Create-Java-Gradle-Project" =              { gradle init --type java-application }
   "Gradle-Run-Java" =                         { .\gradlew run --console=plain} # NOTE: Setting console to plain, so we don't get annoying gradle loading symbols in standard output.
   "Build-CPP-Program" =                       { cmake -G "Ninja" -S . -B build ; cmake --build build --verbose} # IMPORTANT: Specifying the generator with the '-G' parameter rather than setting it globally. (Prevents classhes.)
-  "Run-Cpp" =                                 { ./bin/*.exe }
+  "Run-Cpp" =                                 { .\bin\*.exe }
   "Check-GitHub-SSH-Connection" =             { ssh -T git@github.com }
   "Where-is-path" =                           { param($object) where.exe $object } # NOTE: Undoing PowerShell's 'where' command problem.
   # Script Based Function Aliases:
@@ -205,5 +208,11 @@ if ($currentScriptName.Contains('Microsoft'))
   Share-Profile-With-VSCode-Extension
 }
 
-# NOTE: EXPLICIT AUTO SCRIPT CALLS: (YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING AUTO-SCRIPTS)
-Start-SSHAgent
+# WARN: EXPLICIT SCRIPT CALLS: (YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING SCRIPTS EXPLICITLY)
+$service = Get-Service -Name ssh-agent -ErrorAction SilentlyContinue
+if ($service.Status -ne 'Running') 
+{
+  Start-SSHAgent
+}else{
+	Write-Output "SSH service already running."
+}

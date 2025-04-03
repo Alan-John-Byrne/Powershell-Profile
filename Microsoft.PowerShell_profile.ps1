@@ -1,3 +1,25 @@
+# REMEMBER:
+# PowerShell Profile Loading Explanation
+# -------------------------------------
+# PowerShell automatically loads profiles from multiple locations (scopes) in this sequence:
+# 1. All Users, All Hosts:      $PSHOME\profile.ps1
+# 2. All Users, Current Host:   $PSHOME\Microsoft.PowerShell_profile.ps1
+# 3. Current User, All Hosts:   $HOME\Documents\PowerShell\profile.ps1
+# 4. Current User, Current Host: $HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
+# -------------------------------------
+# If you have both profile.ps1 and Microsoft.PowerShell_profile.ps1 in your 
+# Documents\PowerShell directory (as I did), PowerShell will load BOTH files:
+# - profile.ps1 is loaded for "Current User, All Hosts"
+# - Microsoft.PowerShell_profile.ps1 is loaded for "Current User, Current Host"
+# -------------------------------------
+# This is standard behavior as PowerShell merges profiles from different scopes.
+# To avoid duplicate loading, either:
+# - Keep only one profile file
+# - Make profiles aware of each other with guard variables
+# - Separate your configurations so each file has a distinct purpose
+if ($null -ne $profileLoaded) { return } # WARN: Using guard variable because 'profile.ps1' loads first.
+$profileLoaded = $true
+
 # NOTE: 'function reload { . $PROFILE }' FUNCTION NOT POSSIBLE, MUST USE '. $PROFILE'
 
 # WARN: EXTRA SETTINGS
@@ -93,7 +115,7 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Create-Java-Gradle-Project" =              { gradle init --type java-application }
   "Gradle-Run-Java" =                         { .\gradlew run --console=plain} # NOTE: Setting console to plain, so we don't get annoying gradle loading symbols in standard output.
   "Build-CPP-Program" =                       { cmake -G "Ninja" -S . -B build ; cmake --build build --verbose} # IMPORTANT: Specifying the generator with the '-G' parameter rather than setting it globally. (Prevents classhes.)
-  "Run-Cpp" =                                 { ./bin/*.exe }
+  "Run-Cpp" =                                 { .\bin\*.exe }
   "Check-GitHub-SSH-Connection" =             { ssh -T git@github.com }
   "Where-is-path" =                           { param($object) where.exe $object } # NOTE: Undoing PowerShell's 'where' command problem.
   # Script Based Function Aliases:
@@ -201,9 +223,10 @@ foreach ($functionName in $FunctionDefinitions.Keys)
 # NOTE: (Prevents duplicate terminals on startup in VSCODE)
 $currentScriptName = Split-Path -Leaf $PSCommandPath
 if ($currentScriptName.Contains('Microsoft'))
-{
-  Share-Profile-With-VSCode-Extension
+{ 
+  # REMEMBER: The 'Set-Content' cmdlet used here, creates the 'profile.ps1' file if not already existant.
+  Share-Profile-With-VSCode-Extension 
 }
 
-# NOTE: EXPLICIT AUTO SCRIPT CALLS: (YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING AUTO-SCRIPTS)
+# WARN: EXPLICIT SCRIPT CALLS: (YOU MUST SET THE ENVIRONMENT VARIABLES FIRST BEFORE CALLING SCRIPTS EXPLICITLY)
 Start-SSHAgent
