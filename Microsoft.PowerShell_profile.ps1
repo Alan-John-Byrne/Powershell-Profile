@@ -37,25 +37,6 @@ $AliasDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "edit" =              "Edit-PowerShell-Profile"
   "open" =              "Open-Current-Directory"
   "aliases" =           "Show-Profile-Aliases"
-  "coding" =            "Go-To-Coding-Workspace"
-  "projects" =          "Go-To-Projects"
-  "csdev" =             "Go-To-C#-Development-Workspace"
-  "pydev" =             "Go-To-Python-Development-Workspace"
-  "ldev" =              "Go-To-Lua-Development-Workspace"
-  "jsdev" =             "Go-To-JavaScript-Development-Workspace"
-  "javadev" =           "Go-To-Java-Development-Workspace"
-  "cppdev" =            "Go-To-C++-Development-Workspace"
-  "tsdev" =             "Go-To-Typescript-Development-Workspace"
-  "godev" =             "Go-To-Golang-Development-Workspace"
-  "nvim-path" =         "Go-To-Nvim-Repo-Path"
-  "nvim-plugins" =      "Go-To-Nvim-Plugins-Path"
-  "profile" =           "Go-To-PowerShell-Profile"
-  "gdg" =               "Go-To-Godot-Games"
-  "scripts" =           "Go-To-PowerShell-Scripts"
-  "desktop" =           "Go-To-Desktop"
-  "sshome" =            "Go-To-SSH-Install-Location"
-  "appdata" =           "Go-To-Appdata"
-  "nvim-config" =       "Edit-Nvim-Config"
   "ps-v" =              "Get-PowerShell-Version"
   "env-vars" =          "Get-Environment-Variables"
   "prof-dir" =          "Get-Powershell-Profile-Location"
@@ -88,33 +69,14 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   # Regular Function Aliases:
   "Edit-PowerShell-Profile" =                 { profile; nvim $(get-prof) }
   "Show-Profile-Aliases" =                    { Write-Host "`nPowershell Profile Aliases:`n$($AliasDefinitions.GetEnumerator() | Format-Table -Property Name, Value -AutoSize | Out-String)" }
-  "Go-To-Coding-Workspace" =                  { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding" }
-  "Go-To-Projects" =                          { Set-Location "D:\9-Projects"}
-  "Go-To-C#-Development-Workspace" =          { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\csdev" }
-  "Go-To-Python-Development-Workspace" =      { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\pydev" }
-  "Go-To-Lua-Development-Workspace" =         { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\ldev" }
-  "Go-To-JavaScript-Development-Workspace" =  { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\jsdev" }
-  "Go-To-Java-Development-Workspace" =        { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\javadev" }
-  "Go-To-C++-Development-Workspace" =         { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\cppdev" }
-  "Go-To-Typescript-Development-Workspace" =  { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\tsdev" }
-  "Go-To-Golang-Development-Workspace" =      { Set-Location "D:\4-Personal-OneDrive\OneDrive\Coding\godev" }
-  "Go-To-PowerShell-Profile" =                { Set-Location "$HOME\Documents\Powershell" }
-  "Go-To-Godot-Games" =                       { Set-Location "$HOME\Desktop\Games\Godot Games" }
-  "Go-To-PowerShell-Scripts" =                { Set-Location "$HOME\Documents\PowerShell\scripts" }
-  "Go-To-Desktop" =                           { Set-Location "$HOME\Desktop\" }
-  "Go-To-Nvim-Repo-Path" =                    { Set-Location "$HOME\AppData\Local\nvim" } 
-  "Go-To-Nvim-Plugins-Path" =                 { Set-Location "$HOME\AppData\Local\nvim\lua\custom\plugins" }
-  "Go-To-Appdata" =                           { Set-Location "$HOME\AppData\"}
-  "Go-To-SSH-Install-Location" =              { Set-Location "$HOME\.ssh" }
-  "Edit-Nvim-Config" =                        { Set-Location "$HOME\AppData\Local\nvim" ; nvim 'init.lua' ; profile }
   "Get-Powershell-Profile-Location" =         { return "$HOME\Documents\Powershell" }
   "Get-Current-User-Username" =               { return (whoami | ForEach-Object { $_.Split('\') })[-1] }
   "Get-PowerShell-Version" =                  { Write-Host "Current PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Black -BackgroundColor Green }
-  "Get-Environment-Variables" =               { Get-ChildItem env:* | sort-object name}
+  "Get-Environment-Variables" =               { Get-ChildItem env:* | sort-object name }
   "Open-Current-Directory" =                  { Invoke-Item . }
   "Create-Java-Gradle-Project" =              { gradle init --type java-application }
-  "Gradle-Run-Java" =                         { .\gradlew run --console=plain} # NOTE: Setting console to plain, so we don't get annoying gradle loading symbols in standard output.
-  "Build-CPP-Program" =                       { cmake -G "Ninja" -S . -B build ; cmake --build build --verbose} # IMPORTANT: Specifying the generator with the '-G' parameter rather than setting it globally. (Prevents classhes.)
+  "Gradle-Run-Java" =                         { .\gradlew run --console=plain } # NOTE: Setting console to plain, so we don't get annoying gradle loading symbols (the daemon) in standard output.
+  "Build-CPP-Program" =                       { cmake -G "Ninja" -S . -B build ; cmake --build build --verbose } # IMPORTANT: Specifying the generator with the '-G' parameter rather than setting it globally. (Prevents classhes.)
   "Run-Cpp" =                                 { .\bin\*.exe }
   "Check-GitHub-SSH-Connection" =             { ssh -T git@github.com }
   "Where-is-path" =                           { param($object) where.exe $object } # NOTE: Undoing PowerShell's 'where' command problem.
@@ -128,9 +90,8 @@ $FunctionDefinitions = [ordered]@{ # Keeping the ordered as specified.
   "Sign-Exectuable-With-Certificate" =        { param($PfxFilePath, $Pass, $ExecutablePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\sign-executable.ps1" -PfxFilePath $PfxFilePath -Password $Password -ExecutablePath $ExecutablePath}
   "PowerShell-Package-Manager" =              { param($command, $packageName); & "$ScriptsDir\package-manager.ps1" -command $command -packageName $packageName }
   "Create-File" =                             { param($path_filename); & "$ScriptsDir\touch-create-file.ps1" -path_filename $path_filename }
-  "Add-Path-To-Env-Variables" =               { param($NewPath); & "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath}
+  "Add-Path-To-Env-Variables" =               { param($NewPath); & "$ScriptsDir\add-path-to-env.ps1" -newPath $NewPath }
   "Create-Certificate" =                      { param($SubjectName, $Pass, $PfxFilePath); $Password = $(ConvertTo-SecureString $Pass -AsPlainText); & "$ScriptsDir\create-self-signed-cert-pfx-file.ps1" -SubjectName $SubjectName -Password $Password -PfxFilePath $PfxFilePath }
-
   # AUTO SCRIPTS (No Alias Required): 
   # Called Automatically:
   "Prompt" =                                  { & "$ScriptsDir\appearance.ps1" } # Changing Appearance.
